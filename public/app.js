@@ -1020,8 +1020,6 @@ $("btnInstall")?.addEventListener("click", async () => {
     setView("login");
   }
 })();
-  }
-}
 
 function buildAdminTabs(keys) {
   const map = { settings: "Einstellungen", smtp: "SMTP", system: "Systembenachrichtigungen" };
