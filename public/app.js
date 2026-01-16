@@ -391,22 +391,7 @@ $("btnChangePw")?.addEventListener("click", changePassword);
 // PASSWORD RESET
 // ============================================================================
 
-// Check for reset token in URL
-const urlParams = new URLSearchParams(window.location.search);
-const resetToken = urlParams.get("token");
-
-if (resetToken) {
-  (async () => {
-    try {
-      await api(`/api/auth/password/reset/${resetToken}`);
-      $("viewLogin").style.display = "none";
-      $("viewForgotPassword").style.display = "none";
-      $("viewResetPassword").style.display = "block";
-    } catch (error) {
-      toast("Ungültiger oder abgelaufener Reset-Link");
-    }
-  })();
-}
+// Password reset token is handled in init()
 
 $("btnForgotPassword")?.addEventListener("click", () => {
   $("viewLogin").style.display = "none";
@@ -1111,9 +1096,26 @@ $("btnInstall")?.addEventListener("click", async () => {
     await loadPublicSettings();
     updateNotifUIButtons();
     
-    // Start with login view - don't load family yet
-    state.isLoggedIn = false;
-    setView("login");
+    // Check for password reset token in URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const resetToken = urlParams.get("token");
+    
+    if (resetToken) {
+      try {
+        await api(`/api/auth/password/reset/${resetToken}`);
+        $("viewLogin").style.display = "none";
+        $("viewForgotPassword").style.display = "none";
+        $("viewResetPassword").style.display = "block";
+      } catch (error) {
+        toast("Ungültiger oder abgelaufener Reset-Link");
+        state.isLoggedIn = false;
+        setView("login");
+      }
+    } else {
+      // Normal login view - no reset token
+      state.isLoggedIn = false;
+      setView("login");
+    }
     
     console.log("✓ Portal bereit");
     
