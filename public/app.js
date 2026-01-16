@@ -1140,3 +1140,5 @@ $("btnSaveSettings")?.addEventListener("click", async () => {
     toast("Gespeichert");
   } catch (error) {
     $("adminErr").textContent = error.message;
+  }
+});
