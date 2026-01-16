@@ -756,7 +756,7 @@ async function loadAdminSettings() {
     console.error("Load Admin Settings Error:", error);
     $("adminErr").textContent = error.message;
   }
-});
+}
 
 $("btnSaveSmtp")?.addEventListener("click", async () => {
   try {
