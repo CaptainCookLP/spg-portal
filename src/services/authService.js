@@ -216,6 +216,91 @@ export async function resetPassword(email, newPassword) {
   );
 }
 
+export async function createPasswordResetToken(email) {
+  const normalizedEmail = email.toLowerCase().trim();
+  
+  // Validate email exists in SPG
+  const emailExists = await validateEmailInSPG(normalizedEmail);
+  if (!emailExists) {
+    throw new AppError("Email nicht im System gefunden", 404);
+  }
+  
+  // Clean up old reset tokens for this email
+  await sqliteRun(
+    `DELETE FROM password_reset_tokens WHERE email = ?`,
+    [normalizedEmail]
+  );
+  
+  // Create new token (secure random 32 bytes)
+  const token = crypto.randomBytes(32).toString("hex");
+  const now = new Date();
+  const expiresAt = new Date(now.getTime() + 24 * 60 * 60 * 1000); // 24 hours
+  
+  await sqliteRun(
+    `INSERT INTO password_reset_tokens (token, email, expiresAt, createdAt)
+     VALUES (?, ?, ?, ?)`,
+    [token, normalizedEmail, expiresAt.toISOString(), now.toISOString()]
+  );
+  
+  return token;
+}
+
+export async function validatePasswordResetToken(token) {
+  const resetToken = await sqliteGet(
+    `SELECT * FROM password_reset_tokens 
+     WHERE token = ? 
+     AND datetime(expiresAt) > datetime('now')
+     AND usedAt IS NULL`,
+    [token]
+  );
+  
+  if (!resetToken) {
+    throw new AppError("Ungültiger oder abgelaufener Passwort-Reset-Link", 400);
+  }
+  
+  return resetToken.email;
+}
+
+export async function completePasswordReset(token, newPassword) {
+  if (!newPassword || newPassword.length < 8) {
+    throw new AppError("Passwort muss mindestens 8 Zeichen haben", 400);
+  }
+  
+  const resetToken = await sqliteGet(
+    `SELECT * FROM password_reset_tokens 
+     WHERE token = ? 
+     AND datetime(expiresAt) > datetime('now')
+     AND usedAt IS NULL`,
+    [token]
+  );
+  
+  if (!resetToken) {
+    throw new AppError("Ungültiger oder abgelaufener Passwort-Reset-Link", 400);
+  }
+  
+  const email = resetToken.email;
+  
+  // Update password
+  const { hash, salt, iterations } = hashPassword(newPassword);
+  
+  await sqliteRun(
+    `INSERT OR REPLACE INTO credentials (email, passwordHash, salt, iterations, updatedAt)
+     VALUES (?, ?, ?, ?, ?)`,
+    [email, hash, salt, iterations, new Date().toISOString()]
+  );
+  
+  // Mark token as used
+  await sqliteRun(
+    `UPDATE password_reset_tokens SET usedAt = ? WHERE token = ?`,
+    [new Date().toISOString(), token]
+  );
+  
+  // Revoke all sessions to force re-login
+  await revokeAllSessions(email);
+  
+  return email;
+}
+
 // ============================================================================
 // AUTHORIZATION
 // ============================================================================

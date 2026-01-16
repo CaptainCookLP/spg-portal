@@ -362,6 +362,11 @@ textarea {
   font-size: 14px;
 }
 
+.success {
+  color: #16a34a;
+  font-size: 14px;
+}
+
 .hr {
   height: 1px;
   background: rgba(17, 24, 39, 0.08);

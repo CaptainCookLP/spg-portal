@@ -91,6 +91,27 @@ async function createTables() {
       updatedAt TEXT NOT NULL
     )
   `);
+
+  // Password Reset Tokens
+  await sqliteRun(`
+    CREATE TABLE IF NOT EXISTS password_reset_tokens (
+      token TEXT PRIMARY KEY,
+      email TEXT NOT NULL,
+      expiresAt TEXT NOT NULL,
+      createdAt TEXT NOT NULL,
+      usedAt TEXT
+    )
+  `);
+
+  await sqliteRun(`
+    CREATE INDEX IF NOT EXISTS idx_password_reset_email 
+    ON password_reset_tokens(email)
+  `);
+
+  await sqliteRun(`
+    CREATE INDEX IF NOT EXISTS idx_password_reset_expires 
+    ON password_reset_tokens(expiresAt)
+  `);
   
   // Notifications
   await sqliteRun(`

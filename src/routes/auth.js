@@ -1,8 +1,9 @@
 import express from "express";
-import { login, logout, changePassword } from "../services/authService.js";
+import { login, logout, changePassword, createPasswordResetToken, validatePasswordResetToken, completePasswordReset } from "../services/authService.js";
 import { requireSession } from "../middleware/auth.js";
 import { validateLogin, validatePasswordChange } from "../middleware/validation.js";
 import { loginRateLimiter } from "../middleware/rateLimiter.js";
+import { sendPasswordResetEmail } from "../services/emailService.js";
 
 export const authRouter = express.Router();
 
@@ -72,4 +73,71 @@ authRouter.get("/session", requireSession, (req, res) => {
     memberId: req.user.memberId,
     abteilungId: req.user.abteilungId
   });
+});
+
+// Password Reset - Request
+authRouter.post("/password/forgot", loginRateLimiter, async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    
+    if (!email || !email.trim()) {
+      return res.status(400).json({ error: "Email erforderlich" });
+    }
+    
+    try {
+      const token = await createPasswordResetToken(email.trim().toLowerCase());
+      
+      // Send reset email
+      const resetUrl = `${process.env.BASE_URL}/reset-password?token=${token}`;
+      await sendPasswordResetEmail(email, resetUrl);
+      
+      res.json({ ok: true, message: "Passwort-Reset-Link wurde gesendet" });
+    } catch (error) {
+      // Security: Don't reveal if email exists or not
+      res.json({ ok: true, message: "Passwort-Reset-Link wurde gesendet" });
+    }
+    
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Password Reset - Validate Token
+authRouter.get("/password/reset/:token", async (req, res, next) => {
+  try {
+    const { token } = req.params;
+    
+    try {
+      const email = await validatePasswordResetToken(token);
+      res.json({ ok: true, email });
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+    
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Password Reset - Complete
+authRouter.post("/password/reset/:token", loginRateLimiter, async (req, res, next) => {
+  try {
+    const { token } = req.params;
+    const { password } = req.body;
+    
+    if (!password || password.length < 8) {
+      return res.status(400).json({ error: "Passwort muss mindestens 8 Zeichen haben" });
+    }
+    
+    const email = await completePasswordReset(token, password);
+    
+    res.json({ 
+      ok: true,
+      message: "Passwort erfolgreich geändert. Bitte melden Sie sich an.",
+      email
+    });
+    
+  } catch (error) {
+    next(error);
+  }
 });

@@ -388,6 +388,116 @@ async function changePassword() {
 $("btnChangePw")?.addEventListener("click", changePassword);
 
 // ============================================================================
+// PASSWORD RESET
+// ============================================================================
+
+// Check for reset token in URL
+const urlParams = new URLSearchParams(window.location.search);
+const resetToken = urlParams.get("token");
+
+if (resetToken) {
+  (async () => {
+    try {
+      await api(`/api/auth/password/reset/${resetToken}`);
+      $("viewLogin").style.display = "none";
+      $("viewForgotPassword").style.display = "none";
+      $("viewResetPassword").style.display = "block";
+    } catch (error) {
+      toast("Ungültiger oder abgelaufener Reset-Link");
+    }
+  })();
+}
+
+$("btnForgotPassword")?.addEventListener("click", () => {
+  $("viewLogin").style.display = "none";
+  $("viewForgotPassword").style.display = "block";
+  $("forgotEmail").focus();
+});
+
+$("btnBackToLogin")?.addEventListener("click", () => {
+  $("viewLogin").style.display = "block";
+  $("viewForgotPassword").style.display = "none";
+  $("forgotEmail").value = "";
+  $("forgotErr").textContent = "";
+  $("forgotMsg").textContent = "";
+  $("forgotMsg").style.display = "none";
+});
+
+$("btnSendReset")?.addEventListener("click", async () => {
+  try {
+    const email = $("forgotEmail").value.trim();
+    
+    if (!email) {
+      $("forgotErr").textContent = "Bitte E-Mail-Adresse eingeben";
+      return;
+    }
+    
+    $("forgotErr").textContent = "";
+    $("forgotMsg").textContent = "";
+    $("forgotMsg").style.display = "none";
+    $("btnSendReset").disabled = true;
+    $("btnSendReset").textContent = "Wird gesendet...";
+    
+    await api("/api/auth/password/forgot", {
+      method: "POST",
+      body: { email }
+    });
+    
+    $("forgotMsg").textContent = "Passwort-Reset-Link wurde gesendet. Bitte prüfen Sie Ihr E-Mail-Postfach.";
+    $("forgotMsg").style.display = "block";
+    $("forgotEmail").value = "";
+    
+  } catch (error) {
+    $("forgotErr").textContent = error.message;
+  } finally {
+    $("btnSendReset").disabled = false;
+    $("btnSendReset").textContent = "Passwort-Link senden";
+  }
+});
+
+$("btnCompleteReset")?.addEventListener("click", async () => {
+  try {
+    const password = $("resetPassword").value;
+    const confirm = $("resetPasswordConfirm").value;
+    
+    if (!password || password.length < 8) {
+      $("resetErr").textContent = "Passwort muss mindestens 8 Zeichen haben";
+      return;
+    }
+    
+    if (password !== confirm) {
+      $("resetErr").textContent = "Passwörter stimmen nicht überein";
+      return;
+    }
+    
+    $("resetErr").textContent = "";
+    $("resetMsg").textContent = "";
+    $("resetMsg").style.display = "none";
+    $("btnCompleteReset").disabled = true;
+    $("btnCompleteReset").textContent = "Wird gespeichert...";
+    
+    const result = await api(`/api/auth/password/reset/${resetToken}`, {
+      method: "POST",
+      body: { password }
+    });
+    
+    $("resetMsg").textContent = result.message;
+    $("resetMsg").style.display = "block";
+    
+    setTimeout(() => {
+      // Clear reset token from URL and redirect to login
+      window.history.replaceState({}, document.title, window.location.pathname);
+      window.location.reload();
+    }, 2000);
+    
+  } catch (error) {
+    $("resetErr").textContent = error.message;
+    $("btnCompleteReset").disabled = false;
+    $("btnCompleteReset").textContent = "Passwort setzen";
+  }
+});
+
+// ============================================================================
 // PROFILE & FAMILY
 // ============================================================================
 
@@ -1001,17 +1111,9 @@ $("btnInstall")?.addEventListener("click", async () => {
     await loadPublicSettings();
     updateNotifUIButtons();
     
-    // Session Check - versuchen einzuloggen
-    try {
-      await loadFamily();
-      // Wenn erfolgreich, dann sind wir eingeloggt
-      state.isLoggedIn = true;
-      await afterLogin();
-    } catch (error) {
-      // Nicht eingeloggt - normal
-      state.isLoggedIn = false;
-      setView("login");
-    }
+    // Start with login view - don't load family yet
+    state.isLoggedIn = false;
+    setView("login");
     
     console.log("✓ Portal bereit");
     
