@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mitgliederportal</title>
+  
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css">
+  
+  <meta name="theme-color" content="#b91c1c">
+  <meta name="description" content="Mitgliederportal für SPG Verein">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Portal">
+</head>
+<body>
+  <div class="wrap">
+    <!-- Header -->
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo" id="logoBox">W</div>
+        <div>
+          <h1 id="siteTitle">Mitgliederportal</h1>
+          <p id="siteSub" class="muted">Login</p>
+        </div>
+      </div>
+      
+      <div class="actions">
+        <button class="btn" id="btnInstall" style="display:none">App installieren</button>
+        <button class="btn" id="btnEnableNotif" style="display:none">Benachrichtigungen</button>
+        
+        <div class="pill" id="pillUser" style="display:none">
+          👤 <span id="userEmail"></span>
+        </div>
+        
+        <button class="btn danger" id="btnLogout" style="display:none">Logout</button>
+      </div>
+    </header>
+
+    <main class="grid">
+      <!-- Sidebar -->
+      <aside class="card sidebar">
+        <div class="hd"><h2>Menü</h2></div>
+        <div class="bd">
+          <nav class="nav">
+            <div class="item active" data-view="profile">Profil</div>
+            <div class="item" data-view="notifications">
+              Benachrichtigungen
+              <span class="badge" id="notifBadge" style="display:none">0</span>
+            </div>
+            <div class="item" data-view="password">Passwort ändern</div>
+            <div class="item" data-view="admin" id="navAdmin" style="display:none">Admin</div>
+          </nav>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <section class="card">
+        <div class="hd"><h2 id="viewTitle">Login</h2></div>
+        <div class="bd">
+          
+          <!-- LOGIN VIEW -->
+          <div id="viewLogin">
+            <div class="fieldgrid">
+              <div class="field">
+                <label>E-Mail</label>
+                <input id="email" type="email" autocomplete="username" />
+              </div>
+              <div class="field">
+                <label>Passwort</label>
+                <input id="password" type="password" autocomplete="current-password" />
+              </div>
+            </div>
+            <div class="row">
+              <button class="btn primary" id="btnLogin">Anmelden</button>
+            </div>
+            <p id="loginError" class="error"></p>
+          </div>
+
+          <!-- PROFILE VIEW -->
+          <div id="viewProfile" style="display:none">
+            <div id="memberTabs" class="tabs" style="display:none"></div>
+
+            <div class="card subcard">
+              <div class="hd">
+                <h2 id="memberTitle">Mitglied</h2>
+                <div class="row">
+                  <button class="btn" id="btnEdit">Bearbeiten</button>
+                  <button class="btn primary" id="btnSave" disabled>Speichern</button>
+                  <button class="btn" id="btnCancel" disabled>Abbrechen</button>
+                </div>
+              </div>
+              <div class="bd">
+                <div class="fieldgrid">
+                  <div class="field">
+                    <label>Vorname</label>
+                    <input id="fVorname" disabled />
+                  </div>
+                  <div class="field">
+                    <label>Nachname</label>
+                    <input id="fNachname" disabled />
+                  </div>
+                  <div class="field">
+                    <label>Straße & Hausnummer</label>
+                    <input id="fStrasse" disabled />
+                  </div>
+                  <div class="field">
+                    <label>PLZ</label>
+                    <input id="fPLZ" disabled />
+                  </div>
+                  <div class="field">
+                    <label>Ort</label>
+                    <input id="fOrt" disabled />
+                  </div>
+                  <div class="field">
+                    <label>E-Mail</label>
+                    <input id="fEmail" disabled />
+                  </div>
+                  <div class="field">
+                    <label>Abteilung</label>
+                    <input id="fAbteilung" disabled />
+                  </div>
+                  <div class="field">
+                    <label>Mitglied seit</label>
+                    <input id="fMitgliedSeit" disabled />
+                  </div>
+                  <div class="field">
+                    <label>Handy</label>
+                    <input id="fHandy1" disabled />
+                  </div>
+                  <div class="field">
+                    <label>Telefon privat</label>
+                    <input id="fTelPriv" disabled />
+                  </div>
+                  <div class="field">
+                    <label>Telefon dienstlich</label>
+                    <input id="fTelDienst" disabled />
+                  </div>
+                  <div class="field">
+                    <label>Mandatsreferenz</label>
+                    <input id="fMandatRef" disabled />
+                  </div>
+                  <div class="field">
+                    <label>IBAN (maskiert)</label>
+                    <input id="fIbanMasked" disabled />
+                  </div>
+                  <div class="field">
+                    <label>BIC (maskiert)</label>
+                    <input id="fBicMasked" disabled />
+                  </div>
+                  <div class="field">
+                    <label>Beitrag</label>
+                    <input id="fBeitrag" disabled />
+                  </div>
+                </div>
+                
+                <div class="hr"></div>
+                
+                <div class="hint">
+                  MitgliedID: <code id="fMitgliedId"></code> • 
+                  Eintritt: <span id="fEintritt"></span> • 
+                  Austritt: <span id="fAustritt"></span><br>
+                  DSGVO: <span id="fDsgvo"></span>
+                </div>
+              </div>
+            </div>
+            
+            <p id="profileError" class="error"></p>
+          </div>
+
+          <!-- NOTIFICATIONS VIEW -->
+          <div id="viewNotifications" style="display:none">
+            <div id="notifList"></div>
+            <p id="notifError" class="error"></p>
+          </div>
+
+          <!-- PASSWORD VIEW -->
+          <div id="viewPassword" style="display:none">
+            <p class="hint">Passwort wird lokal gespeichert (nicht in SPG).</p>
+            
+            <div class="fieldgrid">
+              <div class="field">
+                <label>Altes Passwort</label>
+                <input id="pOld" type="password" autocomplete="current-password" />
+              </div>
+              <div class="field">
+                <label>Neues Passwort (min. 8 Zeichen)</label>
+                <input id="pNew" type="password" autocomplete="new-password" />
+              </div>
+            </div>
+            
+            <div class="row">
+              <button class="btn primary" id="btnChangePw">Passwort ändern</button>
+            </div>
+            
+            <p id="pwMsg" class="hint"></p>
+            <p id="pwErr" class="error"></p>
+          </div>
+
+          <!-- ADMIN VIEW -->
+          <div id="viewAdmin" style="display:none">
+            <div class="tabs" id="adminTabs"></div>
+
+            <!-- Settings Tab -->
+            <div id="adminTab_settings" class="adminPane">
+              <h3>Branding</h3>
+              <div class="fieldgrid">
+                <div class="field">
+                  <label>Seitentitel</label>
+                  <input id="aSiteTitle" />
+                </div>
+                <div class="field">
+                  <label>Organisation</label>
+                  <input id="aOrgName" />
+                </div>
+                <div class="field">
+                  <label>Logo URL</label>
+                  <input id="aLogoUrl" />
+                </div>
+                <div class="field">
+                  <label>DSGVO URL</label>
+                  <input id="aDsgvoUrl" />
+                </div>
+              </div>
+
+              <div class="hr"></div>
+              <h3>Theme</h3>
+              
+              <div class="fieldgrid">
+                <div class="field">
+                  <label>Accent Color</label>
+                  <input id="aAccent" type="color" />
+                </div>
+                <div class="field">
+                  <label>Background</label>
+                  <input id="aBg" type="color" />
+                </div>
+                <div class="field">
+                  <label>Card</label>
+                  <input id="aCard" type="color" />
+                </div>
+                <div class="field">
+                  <label>Text</label>
+                  <input id="aText" type="color" />
+                </div>
+                <div class="field">
+                  <label>Muted</label>
+                  <input id="aMuted" type="color" />
+                </div>
+              </div>
+
+              <div class="hr"></div>
+              <h3>E-Mail Layout</h3>
+              
+              <div class="field">
+                <label>Header HTML</label>
+                <div class="wysiwyg" id="wHeader"></div>
+              </div>
+              
+              <div class="field">
+                <label>Footer HTML</label>
+                <div class="wysiwyg" id="wFooter"></div>
+              </div>
+
+              <div class="row">
+                <button class="btn primary" id="btnSaveSettings">Speichern</button>
+              </div>
+              
+              <p id="adminMsg" class="hint"></p>
+              <p id="adminErr" class="error"></p>
+            </div>
+
+            <!-- SMTP Tab -->
+            <div id="adminTab_smtp" class="adminPane" style="display:none">
+              <div class="fieldgrid">
+                <div class="field">
+                  <label>SMTP Host</label>
+                  <input id="sHost" />
+                </div>
+                <div class="field">
+                  <label>Port</label>
+                  <input id="sPort" type="number" />
+                </div>
+                <div class="field">
+                  <label>Secure (TLS)</label>
+                  <select id="sSecure">
+                    <option value="false">false</option>
+                    <option value="true">true</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>User</label>
+                  <input id="sUser" />
+                </div>
+                <div class="field">
+                  <label>Password</label>
+                  <input id="sPass" type="password" />
+                </div>
+                <div class="field">
+                  <label>From Name</label>
+                  <input id="sFromName" />
+                </div>
+                <div class="field">
+                  <label>From Email</label>
+                  <input id="sFromEmail" />
+                </div>
+              </div>
+              
+              <div class="row">
+                <button class="btn primary" id="btnSaveSmtp">Speichern</button>
+              </div>
+
+              <div class="hr"></div>
+              <h3>Test</h3>
+              
+              <div class="fieldgrid">
+                <div class="field">
+                  <label>Test-Mail an</label>
+                  <input id="sTestTo" type="email" />
+                </div>
+              </div>
+              
+              <div class="row">
+                <button class="btn" id="btnTestSmtp">Test senden</button>
+              </div>
+              
+              <p id="smtpMsg" class="hint"></p>
+              <p id="smtpErr" class="error"></p>
+            </div>
+
+            <!-- System Tab -->
+            <div id="adminTab_system" class="adminPane" style="display:none">
+              <div class="fieldgrid">
+                <div class="field">
+                  <label>Titel</label>
+                  <input id="nTitle" />
+                </div>
+                <div class="field">
+                  <label>Zusätzlich per Mail</label>
+                  <select id="nSendMail">
+                    <option value="false">Nein</option>
+                    <option value="true">Ja</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="field">
+                <label>Nachricht</label>
+                <div class="wysiwyg" id="wNotif"></div>
+              </div>
+
+              <div class="fieldgrid">
+                <div class="field">
+                  <label>Personen suchen</label>
+                  <input id="mSearch" placeholder="ID/Name/Mail" />
+                </div>
+                <div class="field">
+                  <label>Dateien</label>
+                  <input id="nFiles" type="file" multiple accept="application/pdf,image/*" />
+                </div>
+              </div>
+
+              <div class="fieldgrid">
+                <div class="field">
+                  <label>Treffer</label>
+                  <select id="mResults" size="7"></select>
+                  <div class="row">
+                    <button class="btn" id="btnAddMember">+ Mitglied</button>
+                    <button class="btn" id="btnAddEmail">+ Email</button>
+                    <button class="btn" id="btnAddAll">+ Alle</button>
+                  </div>
+                </div>
+                <div class="field">
+                  <label>Ziele</label>
+                  <div id="targetsBox" class="hint"></div>
+                </div>
+              </div>
+
+              <div class="row">
+                <button class="btn primary" id="btnCreateNotif">Erstellen</button>
+              </div>
+              
+              <p id="sysMsg" class="hint"></p>
+              <p id="sysErr" class="error"></p>
+            </div>
+          </div>
+
+        </div>
+      </section>
+    </main>
+
+    <!-- Bottom Navigation (Mobile) -->
+    <div class="bottomNav">
+      <div class="brow">
+        <div class="bbtn active" data-view="profile">Profil</div>
+        <div class="bbtn" data-view="notifications">Benachr.</div>
+        <div class="bbtn" data-view="password">Passwort</div>
+      </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <!-- DSGVO Modal -->
+    <div class="modalBack" id="dsgvoBack" style="display:none">
+      <div class="modal">
+        <div class="hd"><strong>DSGVO Zustimmung</strong></div>
+        <div class="bd">
+          <p class="hint">
+            Bitte bestätige die Datenschutzerklärung:
+            <a id="dsgvoLink" href="#" target="_blank" rel="noopener">Datenschutzerklärung</a>
+          </p>
+          <div id="dsgvoList"></div>
+          <div class="row">
+            <button class="btn primary" id="btnDsgvoAccept">Zustimmen</button>
+          </div>
+          <p class="error" id="dsgvoErr"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/app.js" type="module"></script>
+</body>
+</html>
