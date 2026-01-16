@@ -43,8 +43,8 @@ export async function getNotificationsForUser(email) {
       createdAt: n.createdAt,
       createdBy: n.createdBy,
       sendEmail: !!n.sendEmail,
-      targets: JSON.parse(n.targetsJson || "[]"),
-      attachments: JSON.parse(n.attachmentsJson || "[]"),
+      targets: safeJsonParse(n.targetsJson, []),
+      attachments: safeJsonParse(n.attachmentsJson, []),
       readAt: readMap.get(n.id) || null
     }))
     .filter(n => targetsMatch(n.targets, email, memberIds));
@@ -55,6 +55,15 @@ export async function getNotificationsForUser(email) {
     unreadCount,
     items: visible
   };
+}
+
+function safeJsonParse(value, fallback) {
+  try {
+    return JSON.parse(value || JSON.stringify(fallback));
+  } catch (error) {
+    console.error("Ungültiges JSON in Benachrichtigungen:", error);
+    return fallback;
+  }
 }
 
 function targetsMatch(targets, email, memberIds) {
