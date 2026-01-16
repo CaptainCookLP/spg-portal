@@ -21,10 +21,7 @@ export const validateLogin = [
     .isEmail()
     .normalizeEmail()
     .withMessage("Ungültige E-Mail-Adresse"),
-  body("password")
-    .optional() // Password is optional - checked in authService for test email
-    .isLength({ min: 8 })
-    .withMessage("Passwort muss mindestens 8 Zeichen haben"),
+  // Password validation is done in authService based on REQUIRE_PASSWORD env var
   validate
 ];
 
