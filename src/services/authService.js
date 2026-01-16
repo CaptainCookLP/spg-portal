@@ -112,6 +112,7 @@ export async function login(email, password) {
   }
   
   const normalizedEmail = email.toLowerCase().trim();
+  const trimmedPassword = password.trim();
   
   // 1. Check ob Email in SPG existiert
   const emailExists = await validateEmailInSPG(normalizedEmail);
@@ -130,7 +131,7 @@ export async function login(email, password) {
   }
   
   // 3. Passwort verifizieren
-  const isValid = verifyPassword(password, {
+  const isValid = verifyPassword(trimmedPassword, {
     hash: credential.passwordHash,
     salt: credential.salt,
     iterations: credential.iterations
@@ -266,6 +267,13 @@ export async function completePasswordReset(token, newPassword) {
     throw new AppError("Passwort muss mindestens 8 Zeichen haben", 400);
   }
   
+  // Trim password to remove accidental whitespace
+  const trimmedPassword = newPassword.trim();
+  
+  if (trimmedPassword.length < 8) {
+    throw new AppError("Passwort muss mindestens 8 Zeichen haben", 400);
+  }
+  
   const resetToken = await sqliteGet(
     `SELECT * FROM password_reset_tokens 
      WHERE token = ? 
@@ -281,7 +289,7 @@ export async function completePasswordReset(token, newPassword) {
   const email = resetToken.email;
   
   // Update password
-  const { hash, salt, iterations } = hashPassword(newPassword);
+  const { hash, salt, iterations } = hashPassword(trimmedPassword);
   
   await sqliteRun(
     `INSERT OR REPLACE INTO credentials (email, passwordHash, salt, iterations, updatedAt)

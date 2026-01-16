@@ -273,7 +273,7 @@ async function loadPublicSettings() {
 
 async function login() {
   const email = $("email")?.value?.trim();
-  const password = $("password")?.value;
+  const password = $("password")?.value?.trim();
   
   if (!email || !password) {
     $("loginError").textContent = "Bitte Email und Passwort eingeben";
@@ -443,8 +443,8 @@ $("btnSendReset")?.addEventListener("click", async () => {
 
 $("btnCompleteReset")?.addEventListener("click", async () => {
   try {
-    const password = $("resetPassword").value;
-    const confirm = $("resetPasswordConfirm").value;
+    const password = $("resetPassword").value.trim();
+    const confirm = $("resetPasswordConfirm").value.trim();
     
     if (!password || password.length < 8) {
       $("resetErr").textContent = "Passwort muss mindestens 8 Zeichen haben";
