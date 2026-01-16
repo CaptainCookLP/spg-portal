@@ -148,6 +148,7 @@ const state = {
   editing: false,
   editSnapshot: null,
   
+  resetToken: null,
   pollTimer: null,
   installPrompt: null,
   notifEnabled: localStorage.getItem("notif_enabled") === "true"
@@ -455,13 +456,18 @@ $("btnCompleteReset")?.addEventListener("click", async () => {
       return;
     }
     
+    if (!state.resetToken) {
+      $("resetErr").textContent = "Ungültiger Zustand - bitte laden Sie die Seite neu";
+      return;
+    }
+    
     $("resetErr").textContent = "";
     $("resetMsg").textContent = "";
     $("resetMsg").style.display = "none";
     $("btnCompleteReset").disabled = true;
     $("btnCompleteReset").textContent = "Wird gespeichert...";
     
-    const result = await api(`/api/auth/password/reset/${resetToken}`, {
+    const result = await api(`/api/auth/password/reset/${state.resetToken}`, {
       method: "POST",
       body: { password }
     });
@@ -1098,16 +1104,17 @@ $("btnInstall")?.addEventListener("click", async () => {
     
     // Check for password reset token in URL
     const urlParams = new URLSearchParams(window.location.search);
-    const resetToken = urlParams.get("token");
+    state.resetToken = urlParams.get("token");
     
-    if (resetToken) {
+    if (state.resetToken) {
       try {
-        await api(`/api/auth/password/reset/${resetToken}`);
+        await api(`/api/auth/password/reset/${state.resetToken}`);
         $("viewLogin").style.display = "none";
         $("viewForgotPassword").style.display = "none";
         $("viewResetPassword").style.display = "block";
       } catch (error) {
         toast("Ungültiger oder abgelaufener Reset-Link");
+        state.resetToken = null;
         state.isLoggedIn = false;
         setView("login");
       }
