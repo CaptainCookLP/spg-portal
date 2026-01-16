@@ -3,7 +3,111 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mitgliederportal</title>
+  <title>Login - Mitgliederportal</title>
+  
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css">
+  
+  <meta name="theme-color" content="#b91c1c">
+  <meta name="description" content="Mitgliederportal für SPG Verein">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Portal">
+</head>
+<body>
+  <div class="wrap">
+    <!-- Header -->
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo" id="logoBox">W</div>
+        <div>
+          <h1 id="siteTitle">Mitgliederportal</h1>
+          <p id="siteSub" class="muted">Login</p>
+        </div>
+      </div>
+      
+      <div class="actions">
+        <button class="btn" id="btnInstall" style="display:none">App installieren</button>
+        <button class="btn" id="btnEnableNotif" style="display:none">Benachrichtigungen</button>
+      </div>
+    </header>
+
+    <!-- Toast Notifications -->
+    <div id="toast" class="toast"></div>
+
+    <main class="grid">
+      <section class="card">
+        <div class="hd"><h2>Anmelden</h2></div>
+        <div class="bd">
+          
+          <!-- LOGIN FORM -->
+          <div id="viewLogin">
+            <div class="fieldgrid">
+              <div class="field">
+                <label>E-Mail</label>
+                <input id="email" type="email" autocomplete="username" />
+              </div>
+              <div class="field">
+                <label>Passwort</label>
+                <input id="password" type="password" autocomplete="current-password" />
+              </div>
+            </div>
+            <div class="row">
+              <button class="btn primary" id="btnLogin">Anmelden</button>
+            </div>
+            <p id="loginError" class="error"></p>
+            <div style="text-align:center;margin-top:20px">
+              <button class="btn" id="btnForgotPassword" style="font-size:14px;padding:8px 12px">Passwort vergessen?</button>
+            </div>
+          </div>
+
+          <!-- PASSWORD RESET REQUEST VIEW -->
+          <div id="viewForgotPassword" style="display:none">
+            <p style="margin-bottom:20px">Geben Sie Ihre E-Mail-Adresse ein, um einen Passwort-Reset-Link zu erhalten.</p>
+            <div class="fieldgrid">
+              <div class="field">
+                <label>E-Mail</label>
+                <input id="forgotEmail" type="email" autocomplete="email" />
+              </div>
+            </div>
+            <div class="row">
+              <button class="btn primary" id="btnSendReset">Passwort-Link senden</button>
+              <button class="btn" id="btnBackToLogin">Zurück</button>
+            </div>
+            <p id="forgotMsg" class="success" style="display:none;margin-top:15px"></p>
+            <p id="forgotErr" class="error"></p>
+          </div>
+
+          <!-- PASSWORD RESET VIEW -->
+          <div id="viewResetPassword" style="display:none">
+            <p style="margin-bottom:20px">Geben Sie Ihr neues Passwort ein.</p>
+            <div class="fieldgrid">
+              <div class="field">
+                <label>Neues Passwort</label>
+                <input id="resetPassword" type="password" autocomplete="new-password" placeholder="Mindestens 8 Zeichen" />
+              </div>
+              <div class="field">
+                <label>Passwort wiederholen</label>
+                <input id="resetPasswordConfirm" type="password" autocomplete="new-password" placeholder="Bestätigung" />
+              </div>
+            </div>
+            <div class="row">
+              <button class="btn primary" id="btnCompleteReset">Passwort setzen</button>
+            </div>
+            <p id="resetMsg" class="success" style="display:none;margin-top:15px"></p>
+            <p id="resetErr" class="error"></p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="/shared/utils.js"></script>
+  <script src="/shared/api.js"></script>
+  <script src="/pages/login.js"></script>
+</body>
+</html>
   
   <link rel="manifest" href="/manifest.json">
   <link rel="icon" href="/icon.svg" type="image/svg+xml">

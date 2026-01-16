@@ -2,6 +2,7 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import path from "path";
+import fs from "fs";
 import { fileURLToPath } from "url";
 
 // Module imports
@@ -16,6 +17,7 @@ import { errorHandler } from "./src/middleware/errorHandler.js";
 import { rateLimiter } from "./src/middleware/rateLimiter.js";
 import { setupUploadDir } from "./src/utils/fileSystem.js";
 import { startSessionCleanup } from "./src/services/authService.js";
+import { validateSession } from "./src/services/authService.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -52,12 +54,91 @@ app.get("/health", (req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
-// SPA Fallback für Frontend-Routing
-app.get("*", (req, res) => {
-  if (req.path.startsWith("/api/")) {
-    return res.status(404).json({ error: "Endpoint nicht gefunden" });
+// ============================================================================
+// PAGE ROUTES mit Template-System
+// ============================================================================
+
+// Template-System Helper
+function renderTemplate(templatePath, data = {}) {
+  let html = fs.readFileSync(templatePath, "utf-8");
+  
+  // Einfacher Template-Replace ({{VARIABLE}})
+  Object.keys(data).forEach(key => {
+    html = html.replace(new RegExp(`{{${key}}}`, "g"), data[key] || "");
+  });
+  
+  return html;
+}
+
+// Login Page (Public)
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "pages", "login.html"));
+});
+
+// Protected Pages - Require Session
+const requireAuthPage = async (req, res, next) => {
+  const token = req.cookies?.spg_session;
+  const user = await validateSession(token);
+  
+  if (!user) {
+    return res.redirect("/");
   }
-  res.sendFile(path.join(__dirname, "public", "index.html"));
+  
+  req.user = user;
+  next();
+};
+
+// Profil Page
+app.get("/profil", requireAuthPage, (req, res) => {
+  const html = renderTemplate(path.join(__dirname, "public", "pages", "profil.html"), {
+    USER_EMAIL: req.user.email
+  });
+  res.send(html);
+});
+
+// Benachrichtigungen Page
+app.get("/benachrichtigungen", requireAuthPage, (req, res) => {
+  const html = renderTemplate(path.join(__dirname, "public", "pages", "benachrichtigungen.html"), {
+    USER_EMAIL: req.user.email
+  });
+  res.send(html);
+});
+
+// Passwort Page
+app.get("/passwort", requireAuthPage, (req, res) => {
+  const html = renderTemplate(path.join(__dirname, "public", "pages", "passwort.html"), {
+    USER_EMAIL: req.user.email
+  });
+  res.send(html);
+});
+
+// Admin Page
+app.get("/admin", requireAuthPage, async (req, res) => {
+  // Check if admin
+  const { isAdminEmail } = await import("./src/services/authService.js");
+  const isAdmin = await isAdminEmail(req.user.email);
+  
+  if (!isAdmin) {
+    return res.status(403).send("Keine Berechtigung");
+  }
+  
+  const html = renderTemplate(path.join(__dirname, "public", "pages", "admin.html"), {
+    USER_EMAIL: req.user.email
+  });
+  res.send(html);
+});
+
+// Events Page
+app.get("/events", requireAuthPage, (req, res) => {
+  const html = renderTemplate(path.join(__dirname, "public", "pages", "events.html"), {
+    USER_EMAIL: req.user.email
+  });
+  res.send(html);
+});
+
+// Reset Password Page (Public)
+app.get("/reset-password", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "pages", "reset-password.html"));
 });
 
 // Error Handler (muss am Ende sein)

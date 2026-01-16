@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Events - Mitgliederportal</title>
+  
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css">
+  
+  <meta name="theme-color" content="#b91c1c">
+  <meta name="description" content="Mitgliederportal für SPG Verein">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Portal">
+</head>
+<body>
+  <div class="wrap">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo" id="logoBox">W</div>
+        <div>
+          <h1 id="siteTitle">Mitgliederportal</h1>
+          <p id="siteSub" class="muted">Events</p>
+        </div>
+      </div>
+      
+      <div class="actions">
+        <button class="btn" id="btnInstall" style="display:none">App installieren</button>
+        <button class="btn" id="btnEnableNotif" style="display:none">Benachrichtigungen</button>
+        
+        <div class="pill" id="pillUser">
+          👤 <span id="userEmail"></span>
+        </div>
+        
+        <button class="btn danger" id="btnLogout">Logout</button>
+      </div>
+    </header>
+
+    <nav class="topnav">
+      <a href="/profil" class="nav-item">Profil</a>
+      <a href="/benachrichtigungen" class="nav-item">Benachrichtigungen <span class="badge" id="notifBadge" style="display:none"></span></a>
+      <a href="/passwort" class="nav-item">Passwort</a>
+      <a href="/admin" class="nav-item" id="navAdmin" style="display:none">Admin</a>
+      <a href="/events" class="nav-item active">Events</a>
+    </nav>
+
+    <div id="toast" class="toast"></div>
+
+    <main class="grid">
+      <div class="card">
+        <div class="hd">
+          <h2>Events</h2>
+          <button class="btn primary" id="btnNewEvent" style="display:none">Neuer Event</button>
+        </div>
+        <div class="bd">
+          <div id="eventList"></div>
+          <p id="eventsEmpty" class="muted" style="text-align:center;padding:20px">Keine Events</p>
+        </div>
+      </div>
+      
+      <p id="eventsError" class="error"></p>
+    </main>
+  </div>
+
+  <script src="/shared/utils.js"></script>
+  <script src="/shared/api.js"></script>
+  <script src="/shared/auth.js"></script>
+  <script src="/pages/events.js"></script>
+</body>
+</html>

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Mitgliederportal</title>
+  
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css">
+  
+  <meta name="theme-color" content="#b91c1c">
+  <meta name="description" content="Mitgliederportal für SPG Verein">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Portal">
+</head>
+<body>
+  <div class="wrap">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo" id="logoBox">W</div>
+        <div>
+          <h1 id="siteTitle">Mitgliederportal</h1>
+          <p id="siteSub" class="muted">Admin Panel</p>
+        </div>
+      </div>
+      
+      <div class="actions">
+        <button class="btn" id="btnInstall" style="display:none">App installieren</button>
+        <button class="btn" id="btnEnableNotif" style="display:none">Benachrichtigungen</button>
+        
+        <div class="pill" id="pillUser">
+          👤 <span id="userEmail"></span>
+        </div>
+        
+        <button class="btn danger" id="btnLogout">Logout</button>
+      </div>
+    </header>
+
+    <nav class="topnav">
+      <a href="/profil" class="nav-item">Profil</a>
+      <a href="/benachrichtigungen" class="nav-item">Benachrichtigungen <span class="badge" id="notifBadge" style="display:none"></span></a>
+      <a href="/passwort" class="nav-item">Passwort</a>
+      <a href="/admin" class="nav-item active" id="navAdmin">Admin</a>
+      <a href="/events" class="nav-item">Events</a>
+    </nav>
+
+    <div id="toast" class="toast"></div>
+
+    <main class="grid">
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab active" data-tab="settings">Einstellungen</button>
+        <button class="tab" data-tab="smtp">SMTP Konfiguration</button>
+        <button class="tab" data-tab="notifications">Benachrichtigungen</button>
+      </div>
+
+      <!-- Settings Tab -->
+      <div id="tabSettings" class="tab-content">
+        <div class="card subcard">
+          <div class="hd">
+            <h2>Allgemeine Einstellungen</h2>
+            <button class="btn primary" id="btnSaveSettings">Speichern</button>
+          </div>
+          <div class="bd">
+            <div class="fieldgrid">
+              <div class="field">
+                <label>Organisationsname</label>
+                <input id="orgName" />
+              </div>
+              <div class="field">
+                <label>Logo URL</label>
+                <input id="logoUrl" />
+              </div>
+              <div class="field">
+                <label>Admin E-Mail</label>
+                <input id="adminEmail" />
+              </div>
+              <div class="field">
+                <label>DSGVO Link</label>
+                <input id="dsgvoUrl" />
+              </div>
+            </div>
+            <p id="settingsError" class="error"></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- SMTP Tab -->
+      <div id="tabSmtp" class="tab-content" style="display:none">
+        <div class="card subcard">
+          <div class="hd">
+            <h2>SMTP Einstellungen</h2>
+            <button class="btn primary" id="btnSaveSmtp">Speichern</button>
+          </div>
+          <div class="bd">
+            <div class="fieldgrid">
+              <div class="field">
+                <label>SMTP Host</label>
+                <input id="smtpHost" />
+              </div>
+              <div class="field">
+                <label>SMTP Port</label>
+                <input id="smtpPort" type="number" />
+              </div>
+              <div class="field">
+                <label>SMTP User</label>
+                <input id="smtpUser" />
+              </div>
+              <div class="field">
+                <label>SMTP Password</label>
+                <input id="smtpPassword" type="password" />
+              </div>
+              <div class="field">
+                <label>From Email</label>
+                <input id="smtpFrom" />
+              </div>
+            </div>
+            
+            <div class="hr"></div>
+            <button class="btn" id="btnTestSmtp">SMTP Test senden</button>
+            
+            <p id="smtpError" class="error"></p>
+            <p id="smtpSuccess" class="success"></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Notifications Tab -->
+      <div id="tabNotifications" class="tab-content" style="display:none">
+        <div class="card subcard">
+          <div class="hd">
+            <h2>Benachrichtigung senden</h2>
+          </div>
+          <div class="bd">
+            <div class="fieldgrid">
+              <div class="field">
+                <label>Betreff</label>
+                <input id="notifTitle" />
+              </div>
+              <div class="field">
+                <label>Nachricht</label>
+                <textarea id="notifMessage" rows="4"></textarea>
+              </div>
+              <div class="field">
+                <label for="notifTarget">Empfänger</label>
+                <select id="notifTarget">
+                  <option value="all">Alle Mitglieder</option>
+                  <option value="admins">Nur Admins</option>
+                  <option value="selected">Ausgewählte Mitglieder</option>
+                </select>
+              </div>
+            </div>
+            
+            <button class="btn primary" id="btnSendNotif">Senden</button>
+            
+            <p id="notifError" class="error"></p>
+            <p id="notifSuccess" class="success"></p>
+          </div>
+        </div>
+      </div>
+
+      <p id="adminError" class="error"></p>
+    </main>
+  </div>
+
+  <script src="/shared/utils.js"></script>
+  <script src="/shared/api.js"></script>
+  <script src="/shared/auth.js"></script>
+  <script src="/pages/admin.js"></script>
+</body>
+</html>

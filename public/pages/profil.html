@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profil - Mitgliederportal</title>
+  
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css">
+  
+  <meta name="theme-color" content="#b91c1c">
+  <meta name="description" content="Mitgliederportal für SPG Verein">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Portal">
+</head>
+<body>
+  <div class="wrap">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo" id="logoBox">W</div>
+        <div>
+          <h1 id="siteTitle">Mitgliederportal</h1>
+          <p id="siteSub" class="muted">Profil</p>
+        </div>
+      </div>
+      
+      <div class="actions">
+        <button class="btn" id="btnInstall" style="display:none">App installieren</button>
+        <button class="btn" id="btnEnableNotif" style="display:none">Benachrichtigungen</button>
+        
+        <div class="pill" id="pillUser">
+          👤 <span id="userEmail"></span>
+        </div>
+        
+        <button class="btn danger" id="btnLogout">Logout</button>
+      </div>
+    </header>
+
+    <nav class="topnav">
+      <a href="/profil" class="nav-item active">Profil</a>
+      <a href="/benachrichtigungen" class="nav-item">Benachrichtigungen <span class="badge" id="notifBadge" style="display:none"></span></a>
+      <a href="/passwort" class="nav-item">Passwort</a>
+      <a href="/admin" class="nav-item" id="navAdmin" style="display:none">Admin</a>
+      <a href="/events" class="nav-item">Events</a>
+    </nav>
+
+    <div id="toast" class="toast"></div>
+
+    <main class="grid">
+      <div id="memberTabs" class="tabs" style="display:none"></div>
+
+      <div class="card subcard">
+        <div class="hd">
+          <h2 id="memberTitle">Mitglied</h2>
+          <div class="row">
+            <button class="btn" id="btnEdit">Bearbeiten</button>
+            <button class="btn primary" id="btnSave" disabled>Speichern</button>
+            <button class="btn" id="btnCancel" disabled>Abbrechen</button>
+          </div>
+        </div>
+        <div class="bd">
+          <div class="fieldgrid">
+            <div class="field">
+              <label>Vorname</label>
+              <input id="fVorname" disabled />
+            </div>
+            <div class="field">
+              <label>Nachname</label>
+              <input id="fNachname" disabled />
+            </div>
+            <div class="field">
+              <label>Straße & Hausnummer</label>
+              <input id="fStrasse" disabled />
+            </div>
+            <div class="field">
+              <label>PLZ</label>
+              <input id="fPLZ" disabled />
+            </div>
+            <div class="field">
+              <label>Ort</label>
+              <input id="fOrt" disabled />
+            </div>
+            <div class="field">
+              <label>E-Mail</label>
+              <input id="fEmail" disabled />
+            </div>
+            <div class="field">
+              <label>Abteilung</label>
+              <input id="fAbteilung" disabled />
+            </div>
+            <div class="field">
+              <label>Mitglied seit</label>
+              <input id="fMitgliedSeit" disabled />
+            </div>
+            <div class="field">
+              <label>Handy</label>
+              <input id="fHandy1" disabled />
+            </div>
+            <div class="field">
+              <label>Telefon privat</label>
+              <input id="fTelPriv" disabled />
+            </div>
+            <div class="field">
+              <label>Telefon dienstlich</label>
+              <input id="fTelDienst" disabled />
+            </div>
+            <div class="field">
+              <label>Mandatsreferenz</label>
+              <input id="fMandatRef" disabled />
+            </div>
+            <div class="field">
+              <label>IBAN (maskiert)</label>
+              <input id="fIbanMasked" disabled />
+            </div>
+            <div class="field">
+              <label>BIC (maskiert)</label>
+              <input id="fBicMasked" disabled />
+            </div>
+            <div class="field">
+              <label>Beitrag</label>
+              <input id="fBeitrag" disabled />
+            </div>
+          </div>
+          
+          <div class="hr"></div>
+          
+          <div class="hint">
+            MitgliedID: <code id="fMitgliedId"></code> • 
+            Eintritt: <span id="fEintritt"></span> • 
+            Austritt: <span id="fAustritt"></span><br>
+            DSGVO: <span id="fDsgvo"></span>
+          </div>
+        </div>
+      </div>
+      
+      <p id="profileError" class="error"></p>
+    </main>
+  </div>
+
+  <script src="/shared/utils.js"></script>
+  <script src="/shared/api.js"></script>
+  <script src="/shared/auth.js"></script>
+  <script src="/pages/profil.js"></script>
+</body>
+</html>
