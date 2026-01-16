@@ -114,11 +114,12 @@ export async function login(email, password) {
   const normalizedEmail = email.toLowerCase().trim();
   const trimmedPassword = password?.trim();
   const testEmail = (process.env.TEST_EMAIL || "").toLowerCase().trim();
+  const requirePassword = process.env.REQUIRE_PASSWORD !== "false";
   
   // Check if this is the test email (password optional)
   const isTestEmail = testEmail && normalizedEmail === testEmail;
   
-  if (!isTestEmail && !trimmedPassword) {
+  if (requirePassword && !isTestEmail && !trimmedPassword) {
     throw new AppError("Passwort erforderlich", 400);
   }
   
@@ -128,18 +129,18 @@ export async function login(email, password) {
     throw new AppError("Ungültige Anmeldedaten", 401);
   }
   
-  // 2. Check ob lokales Passwort gesetzt ist (skip for test email)
+  // 2. Check ob lokales Passwort gesetzt ist (skip if passwords are optional)
   const credential = await sqliteGet(
     `SELECT * FROM credentials WHERE email = ?`,
     [normalizedEmail]
   );
   
-  if (!isTestEmail && !credential) {
+  if (requirePassword && !isTestEmail && !credential) {
     throw new AppError("Kein Passwort gesetzt. Bitte Admin kontaktieren.", 403);
   }
   
-  // 3. Passwort verifizieren (skip for test email)
-  if (!isTestEmail && credential) {
+  // 3. Passwort verifizieren (skip if passwords are optional or this is test email)
+  if (requirePassword && !isTestEmail && credential) {
     const isValid = verifyPassword(trimmedPassword, {
       hash: credential.passwordHash,
       salt: credential.salt,
