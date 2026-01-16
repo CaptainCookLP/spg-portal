@@ -55,11 +55,26 @@ export async function requireAdmin(req, res, next) {
 }
 
 export function optionalSession(req, res, next) {
-  requireSession(req, res, (err) => {
-    // Bei Fehler trotzdem weitermachen
-    if (err) {
-      req.user = null;
-    }
-    next();
-  });
+  const token = req.cookies?.spg_session || req.headers.authorization?.replace("Bearer ", "");
+  
+  if (!token) {
+    req.user = null;
+    return next();
+  }
+  
+  validateSession(token)
+    .then(session => {
+      if (!session) {
+        req.user = null;
+      } else {
+        req.user = {
+          email: session.email,
+          memberId: session.memberId,
+          abteilungId: session.abteilungId,
+          token: session.token
+        };
+      }
+      next();
+    })
+    .catch(next);
 }

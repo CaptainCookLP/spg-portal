@@ -68,6 +68,7 @@ notificationRouter.post(
   "/",
   requireAdmin,
   upload.array("files", 10),
+  validateNotification,
   async (req, res, next) => {
     try {
       const { title, bodyText, bodyHtml, sendEmail, targetsJson } = req.body;
