@@ -107,12 +107,20 @@ async function getMemberMeta(email) {
 }
 
 export async function login(email, password) {
-  if (!email || !password) {
-    throw new AppError("Email und Passwort erforderlich", 400);
+  if (!email) {
+    throw new AppError("Email erforderlich", 400);
   }
   
   const normalizedEmail = email.toLowerCase().trim();
-  const trimmedPassword = password.trim();
+  const trimmedPassword = password?.trim();
+  const testEmail = (process.env.TEST_EMAIL || "").toLowerCase().trim();
+  
+  // Check if this is the test email (password optional)
+  const isTestEmail = testEmail && normalizedEmail === testEmail;
+  
+  if (!isTestEmail && !trimmedPassword) {
+    throw new AppError("Passwort erforderlich", 400);
+  }
   
   // 1. Check ob Email in SPG existiert
   const emailExists = await validateEmailInSPG(normalizedEmail);
@@ -120,25 +128,27 @@ export async function login(email, password) {
     throw new AppError("Ungültige Anmeldedaten", 401);
   }
   
-  // 2. Check ob lokales Passwort gesetzt ist
+  // 2. Check ob lokales Passwort gesetzt ist (skip for test email)
   const credential = await sqliteGet(
     `SELECT * FROM credentials WHERE email = ?`,
     [normalizedEmail]
   );
   
-  if (!credential) {
+  if (!isTestEmail && !credential) {
     throw new AppError("Kein Passwort gesetzt. Bitte Admin kontaktieren.", 403);
   }
   
-  // 3. Passwort verifizieren
-  const isValid = verifyPassword(trimmedPassword, {
-    hash: credential.passwordHash,
-    salt: credential.salt,
-    iterations: credential.iterations
-  });
-  
-  if (!isValid) {
-    throw new AppError("Ungültige Anmeldedaten", 401);
+  // 3. Passwort verifizieren (skip for test email)
+  if (!isTestEmail && credential) {
+    const isValid = verifyPassword(trimmedPassword, {
+      hash: credential.passwordHash,
+      salt: credential.salt,
+      iterations: credential.iterations
+    });
+    
+    if (!isValid) {
+      throw new AppError("Ungültige Anmeldedaten", 401);
+    }
   }
   
   // 4. Member Metadaten holen

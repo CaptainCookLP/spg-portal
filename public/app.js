@@ -275,10 +275,12 @@ async function login() {
   const email = $("email")?.value?.trim();
   const password = $("password")?.value?.trim();
   
-  if (!email || !password) {
-    $("loginError").textContent = "Bitte Email und Passwort eingeben";
+  if (!email) {
+    $("loginError").textContent = "Bitte Email eingeben";
     return;
   }
+  
+  // Note: Password may be optional for test email (checked on server)
   
   try {
     $("loginError").textContent = "";
@@ -287,7 +289,7 @@ async function login() {
     
     await api("/api/auth/login", {
       method: "POST",
-      body: { email, password }
+      body: { email, password: password || "" }
     });
     
     await afterLogin();
