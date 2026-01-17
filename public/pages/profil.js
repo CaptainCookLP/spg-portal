@@ -45,8 +45,8 @@ const $el = {
 document.addEventListener("DOMContentLoaded", async () => {
   try {
     // Check auth (from shared/auth.js)
-    if (!appState.isLoggedIn) {
-      window.location.href = "/";
+    const isLoggedIn = await checkAuth();
+    if (!isLoggedIn) {
       return;
     }
     

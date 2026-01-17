@@ -2,15 +2,24 @@ const CACHE_NAME = "spg-portal-v1";
 const urlsToCache = [
   "/",
   "/styles.css",
-  "/app.js",
   "/manifest.json",
-  "/icon.svg"
+  "/shared/utils.js",
+  "/shared/api.js"
 ];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(urlsToCache);
+      // Add URLs individually with error handling
+      return Promise.all(
+        urlsToCache.map((url) => {
+          return cache.add(url).catch((err) => {
+            console.warn(`Failed to cache ${url}:`, err);
+            // Don't fail the entire install if one URL fails
+            return Promise.resolve();
+          });
+        })
+      );
     })
   );
   self.skipWaiting();

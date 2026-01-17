@@ -43,6 +43,21 @@ async function checkAuth() {
   }
 }
 
+// Auto-check auth when DOM is ready (if not login page)
+// Protected page scripts (profil.js, benachrichtigungen.js, etc.) will call checkAuth() themselves
+// This is a fallback for other HTML pages
+document.addEventListener("DOMContentLoaded", async () => {
+  // Skip on login page
+  if (window.location.pathname === "/" || window.location.pathname.endsWith("/login.html")) {
+    return;
+  }
+  
+  // Only check if appState.isLoggedIn is still false (meaning no script called checkAuth)
+  if (!appState.isLoggedIn) {
+    await checkAuth();
+  }
+});
+
 // Load public settings
 async function loadPublicSettings() {
   try {

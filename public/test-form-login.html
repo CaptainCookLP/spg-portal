@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Form Login Test</title>
+</head>
+<body>
+  <h1>Form Login Test</h1>
+  
+  <form action="/api/auth/login" method="POST">
+    <div>
+      <label for="email">E-Mail:</label>
+      <input type="text" id="email" name="email" value="fabian.koch1998@gmail.com" required />
+    </div>
+    
+    <div>
+      <label for="password">Passwort:</label>
+      <input type="password" id="password" name="password" value="Start1234!" required />
+    </div>
+    
+    <button type="submit">Login (Form)</button>
+  </form>
+  
+  <hr>
+  
+  <h2>API Login Test</h2>
+  <button onclick="apiLogin()">Login (API)</button>
+  <p id="status"></p>
+  
+  <script>
+    async function apiLogin() {
+      const status = document.getElementById('status');
+      try {
+        status.textContent = 'Logging in...';
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include',
+          body: JSON.stringify({
+            email: 'fabian.koch1998@gmail.com',
+            password: 'Start1234!'
+          })
+        });
+        
+        const data = await response.json();
+        console.log('Response:', data);
+        
+        if (response.ok) {
+          status.textContent = 'Login erfolgreich! Leite zu /profil weiter...';
+          console.log('Navigating to /profil');
+          window.location.href = '/profil';
+        } else {
+          status.textContent = 'Login fehlgeschlagen: ' + data.error;
+        }
+      } catch (err) {
+        status.textContent = 'Fehler: ' + err.message;
+        console.error(err);
+      }
+    }
+  </script>
+</body>
+</html>

@@ -20,8 +20,8 @@ const $el = {
 // Initialize
 document.addEventListener("DOMContentLoaded", async () => {
   try {
-    if (!appState.isLoggedIn) {
-      window.location.href = "/";
+    const isLoggedIn = await checkAuth();
+    if (!isLoggedIn) {
       return;
     }
     

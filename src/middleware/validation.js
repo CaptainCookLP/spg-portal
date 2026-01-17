@@ -18,8 +18,8 @@ export function validate(req, res, next) {
 // Login Validation
 export const validateLogin = [
   body("email")
+    .trim()
     .isEmail()
-    .normalizeEmail()
     .withMessage("Ungültige E-Mail-Adresse"),
   // Password validation is done in authService based on REQUIRE_PASSWORD env var
   validate
@@ -39,8 +39,8 @@ export const validatePasswordChange = [
 // Email Validation
 export const validateEmail = [
   body("email")
+    .trim()
     .isEmail()
-    .normalizeEmail()
     .withMessage("Ungültige E-Mail-Adresse"),
   validate
 ];

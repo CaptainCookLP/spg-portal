@@ -45,17 +45,21 @@ async function login() {
     $("btnLogin").disabled = true;
     $("btnLogin").textContent = "Anmelden...";
     
-    await api("/api/auth/login", {
+    console.log("Starting login...");
+    const result = await api("/api/auth/login", {
       method: "POST",
       body: { email, password: password || "" }
     });
     
+    console.log("Login successful, result:", result);
+    
     // Erfolgreich eingeloggt - Redirect
+    console.log("Redirecting to /profil...");
     window.location.href = "/profil";
     
   } catch (error) {
-    $("loginError").textContent = error.message;
     console.error("Login Error:", error);
+    $("loginError").textContent = error.message || "Login fehlgeschlagen";
   } finally {
     $("btnLogin").disabled = false;
     $("btnLogin").textContent = "Anmelden";

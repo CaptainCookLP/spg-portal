@@ -114,58 +114,58 @@ export async function login(email, password) {
   const normalizedEmail = email.toLowerCase().trim();
   const trimmedPassword = password?.trim();
   const testEmail = (process.env.TEST_EMAIL || "").toLowerCase().trim();
-  const requirePassword = process.env.REQUIRE_PASSWORD !== "false";
+  const testPassword = process.env.TEST_PASSWORD || "";
   
-  // Check if this is the test email (password optional)
+  // Check if this is the test email
   const isTestEmail = testEmail && normalizedEmail === testEmail;
   
-  if (requirePassword && !isTestEmail && !trimmedPassword) {
+  // For test email: use direct password comparison from .env
+  if (isTestEmail) {
+    if (trimmedPassword !== testPassword) {
+      throw new AppError("Ungültige Anmeldedaten", 401);
+    }
+    // Create session without member data
+    const session = await createSession(normalizedEmail, null, null);
+    return session;
+  }
+  
+  // Regular email: require password
+  if (!trimmedPassword) {
     throw new AppError("Passwort erforderlich", 400);
   }
   
-  // 1. Check ob Email in SPG existiert (skip for test email)
-  if (!isTestEmail) {
-    const emailExists = await validateEmailInSPG(normalizedEmail);
-    if (!emailExists) {
-      throw new AppError("Ungültige Anmeldedaten", 401);
-    }
+  // Validate email in SPG
+  const emailExists = await validateEmailInSPG(normalizedEmail);
+  if (!emailExists) {
+    throw new AppError("Ungültige Anmeldedaten", 401);
   }
   
-  // 2. Check ob lokales Passwort gesetzt ist (skip if passwords are optional)
+  // Get credentials from SQLite
   const credential = await sqliteGet(
     `SELECT * FROM credentials WHERE email = ?`,
     [normalizedEmail]
   );
   
-  if (requirePassword && !isTestEmail && !credential) {
+  if (!credential) {
     throw new AppError("Kein Passwort gesetzt. Bitte Admin kontaktieren.", 403);
   }
   
-  // 3. Passwort verifizieren (skip if passwords are optional or this is test email)
-  if (requirePassword && !isTestEmail && credential) {
-    const isValid = verifyPassword(trimmedPassword, {
-      hash: credential.passwordHash,
-      salt: credential.salt,
-      iterations: credential.iterations
-    });
-    
-    if (!isValid) {
-      throw new AppError("Ungültige Anmeldedaten", 401);
-    }
+  // Verify password
+  const isValid = verifyPassword(trimmedPassword, {
+    hash: credential.passwordHash,
+    salt: credential.salt,
+    iterations: credential.iterations
+  });
+  
+  if (!isValid) {
+    throw new AppError("Ungültige Anmeldedaten", 401);
   }
   
-  // 4. Member Metadaten holen (fallback für Test-Email)
-  let memberId = null;
-  let abteilungId = null;
+  // Get member metadata
+  const meta = await getMemberMeta(normalizedEmail);
   
-  if (!isTestEmail) {
-    const meta = await getMemberMeta(normalizedEmail);
-    memberId = meta.memberId;
-    abteilungId = meta.abteilungId;
-  }
-  
-  // 5. Session erstellen
-  const session = await createSession(normalizedEmail, memberId, abteilungId);
+  // Create session
+  const session = await createSession(normalizedEmail, meta.memberId, meta.abteilungId);
   
   return session;
 }

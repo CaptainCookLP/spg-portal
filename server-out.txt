@@ -1,0 +1,43 @@
+🚀 Starte Server...
+✓ Upload-Verzeichnis bereit
+✓ SQLite DB: C:\Users\Messe\GitHub\spg-portal\data\portal.db
+✓ Datenbank initialisiert
+✓ Session Cleanup aktiv
+✓ Server läuft auf Port 3000
+✓ Environment: development
+✓ Base URL: http://localhost:3000
+
+🎉 Portal bereit!
+
+[LOGIN] Raw email input: 'fabian.koch1998@gmail.com' (length: 25)
+[LOGIN] Normalized email: 'fabian.koch1998@gmail.com' (length: 25)
+[LOGIN] TestEmail from ENV: 'fabian.koch1998@gmail.com' (length: 25)
+[LOGIN] isTestEmail: true
+[LOGIN] Character by character comparison:
+  [0] Normalized: 'f' vs TestEmail: 'f'
+  [1] Normalized: 'a' vs TestEmail: 'a'
+  [2] Normalized: 'b' vs TestEmail: 'b'
+  [3] Normalized: 'i' vs TestEmail: 'i'
+  [4] Normalized: 'a' vs TestEmail: 'a'
+  [5] Normalized: 'n' vs TestEmail: 'n'
+  [6] Normalized: '.' vs TestEmail: '.'
+  [7] Normalized: 'k' vs TestEmail: 'k'
+  [8] Normalized: 'o' vs TestEmail: 'o'
+  [9] Normalized: 'c' vs TestEmail: 'c'
+  [10] Normalized: 'h' vs TestEmail: 'h'
+  [11] Normalized: '1' vs TestEmail: '1'
+  [12] Normalized: '9' vs TestEmail: '9'
+  [13] Normalized: '9' vs TestEmail: '9'
+  [14] Normalized: '8' vs TestEmail: '8'
+  [15] Normalized: '@' vs TestEmail: '@'
+  [16] Normalized: 'g' vs TestEmail: 'g'
+  [17] Normalized: 'm' vs TestEmail: 'm'
+  [18] Normalized: 'a' vs TestEmail: 'a'
+  [19] Normalized: 'i' vs TestEmail: 'i'
+  [20] Normalized: 'l' vs TestEmail: 'l'
+  [21] Normalized: '.' vs TestEmail: '.'
+  [22] Normalized: 'c' vs TestEmail: 'c'
+  [23] Normalized: 'o' vs TestEmail: 'o'
+  [24] Normalized: 'm' vs TestEmail: 'm'
+[LOGIN] Processing test email...
+[LOGIN] Password correct, creating session...
