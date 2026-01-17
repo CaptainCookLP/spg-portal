@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug - Login Test</title>
+    <style>
+        body { font-family: Arial; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; }
+        .debug-box { background: #f0f0f0; padding: 15px; border-radius: 4px; margin: 10px 0; border-left: 3px solid #b91c1c; }
+        h2 { color: #b91c1c; }
+        code { background: #333; color: #0f0; padding: 10px; display: block; border-radius: 4px; overflow-x: auto; }
+        button { padding: 10px 20px; background: #b91c1c; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #991b1b; }
+        input { padding: 10px; width: 100%; margin: 10px 0; }
+        .result { padding: 15px; border-radius: 4px; margin: 15px 0; }
+        .success { background: #d1fae5; border: 1px solid #10b981; }
+        .error { background: #fee2e2; border: 1px solid #dc2626; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Login Debug</h1>
+        
+        <div class="debug-box">
+            <h3>1. Umgebungsvariablen prüfen</h3>
+            <button onclick="checkEnv()">Env-Variablen abrufen</button>
+            <div id="envResult"></div>
+        </div>
+
+        <div class="debug-box">
+            <h3>2. Login mit Test-Daten</h3>
+            <p><strong>WICHTIG:</strong> Email MUSS Punkt haben: fabian.koch1998@gmail.com</p>
+            <input type="text" id="email" placeholder="E-Mail" value="fabian.koch1998@gmail.com">
+            <input type="password" id="password" placeholder="Passwort" value="Start1234!">
+            <button onclick="testLogin()">Login versuchen</button>
+            <div id="loginResult"></div>
+        </div>
+
+        <div class="debug-box">
+            <h3>3. Email-Validierung in MSSQL</h3>
+            <input type="email" id="testEmail" placeholder="E-Mail zum Prüfen" value="fabian.koch1998@gmail.com">
+            <button onclick="validateEmailDB()">In DB prüfen</button>
+            <div id="validateResult"></div>
+        </div>
+
+        <div class="debug-box">
+            <h3>4. SQLite-Credentials prüfen</h3>
+            <input type="email" id="credEmail" placeholder="E-Mail zum Prüfen" value="fabian.koch1998@gmail.com">
+            <button onclick="checkCredentials()">Credentials prüfen</button>
+            <div id="credResult"></div>
+        </div>
+    </div>
+
+    <script>
+        async function checkEnv() {
+            try {
+                const response = await fetch('/api/public/debug/env');
+                const data = await response.json();
+                const html = `<div class="result success">
+                    <strong>Umgebungsvariablen:</strong>
+                    <code>${JSON.stringify(data, null, 2)}</code>
+                </div>`;
+                document.getElementById('envResult').innerHTML = html;
+            } catch (e) {
+                document.getElementById('envResult').innerHTML = `<div class="result error">Fehler: ${e.message}</div>`;
+            }
+        }
+
+        async function testLogin() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    document.getElementById('loginResult').innerHTML = `<div class="result success">
+                        ✓ Login erfolgreich!<br>
+                        Token: ${data.token.substring(0, 20)}...<br>
+                        Expires: ${data.expiresAt}
+                    </div>`;
+                } else {
+                    document.getElementById('loginResult').innerHTML = `<div class="result error">
+                        ✗ Login fehlgeschlagen<br>
+                        ${data.error}
+                    </div>`;
+                }
+            } catch (e) {
+                document.getElementById('loginResult').innerHTML = `<div class="result error">Fehler: ${e.message}</div>`;
+            }
+        }
+
+        async function validateEmailDB() {
+            const email = document.getElementById('testEmail').value;
+            
+            try {
+                const response = await fetch('/api/public/debug/validate-email', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+                
+                const data = await response.json();
+                
+                document.getElementById('validateResult').innerHTML = `<div class="result ${data.exists ? 'success' : 'error'}">
+                    Email: ${email}<br>
+                    Existiert in DB: ${data.exists ? '✓ Ja' : '✗ Nein'}<br>
+                    Details: ${JSON.stringify(data.details || {})}
+                </div>`;
+            } catch (e) {
+                document.getElementById('validateResult').innerHTML = `<div class="result error">Fehler: ${e.message}</div>`;
+            }
+        }
+
+        async function checkCredentials() {
+            const email = document.getElementById('credEmail').value;
+            
+            try {
+                const response = await fetch('/api/public/debug/credentials', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+                
+                const data = await response.json();
+                
+                document.getElementById('credResult').innerHTML = `<div class="result ${data.found ? 'success' : 'error'}">
+                    Email: ${email}<br>
+                    Credentials vorhanden: ${data.found ? '✓ Ja' : '✗ Nein'}<br>
+                    ${data.found ? `Hash: ${data.hash.substring(0, 20)}...` : ''}
+                </div>`;
+            } catch (e) {
+                document.getElementById('credResult').innerHTML = `<div class="result error">Fehler: ${e.message}</div>`;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Test Suite</title>
+    <style>
+        body { font-family: Arial; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .test-section { background: white; padding: 20px; margin: 20px 0; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .test-page { background: #f9f9f9; padding: 10px; margin: 10px 0; border-radius: 4px; border-left: 3px solid #b91c1c; }
+        .test-page a { display: inline-block; margin: 5px 5px 5px 0; padding: 8px 12px; background: #b91c1c; color: white; text-decoration: none; border-radius: 4px; }
+        .test-page a:hover { background: #991b1b; }
+        .status { margin: 10px 0; padding: 10px; border-radius: 4px; }
+        .status.ok { background: #d1fae5; color: #065f46; }
+        .status.error { background: #fee2e2; color: #991b1b; }
+        .status.loading { background: #fef3c7; color: #92400e; }
+        h1, h2 { margin: 0 0 10px; }
+        .console { background: #222; color: #0f0; padding: 15px; border-radius: 4px; font-family: monospace; max-height: 300px; overflow-y: auto; }
+        input { padding: 8px; width: 300px; margin-right: 10px; }
+        button { padding: 8px 15px; background: #b91c1c; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #991b1b; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 SPG Portal - Test Suite</h1>
+        
+        <div class="test-section">
+            <h2>📱 Pages zum Testen</h2>
+            
+            <div class="test-page">
+                <strong>1. Login Page</strong>
+                <a href="/" target="_blank">→ Zur Login</a>
+                <div id="status-login" class="status loading">Prüfe...</div>
+            </div>
+
+            <div class="test-page">
+                <strong>2. Profil</strong>
+                <a href="/profil" target="_blank">→ Zur Profil-Seite</a>
+                <div id="status-profil" class="status loading">Prüfe...</div>
+            </div>
+
+            <div class="test-page">
+                <strong>3. Benachrichtigungen</strong>
+                <a href="/benachrichtigungen" target="_blank">→ Zu Benachrichtigungen</a>
+                <div id="status-benachrichtigungen" class="status loading">Prüfe...</div>
+            </div>
+
+            <div class="test-page">
+                <strong>4. Passwort</strong>
+                <a href="/passwort" target="_blank">→ Zur Passwort-Seite</a>
+                <div id="status-passwort" class="status loading">Prüfe...</div>
+            </div>
+
+            <div class="test-page">
+                <strong>5. Admin</strong>
+                <a href="/admin" target="_blank">→ Zur Admin-Seite</a>
+                <div id="status-admin" class="status loading">Prüfe...</div>
+            </div>
+
+            <div class="test-page">
+                <strong>6. Events</strong>
+                <a href="/events" target="_blank">→ Zu Events</a>
+                <div id="status-events" class="status loading">Prüfe...</div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>🔐 Test mit Credentials</h2>
+            <p>
+                <input type="email" id="email" placeholder="E-Mail" value="fabian.koch1998@gmail.com">
+                <input type="password" id="password" placeholder="Passwort" value="Start1234!">
+                <button onclick="testLogin()">🔑 Login testen</button>
+            </p>
+            <div id="login-result" class="status" style="display:none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>📊 Konsole Output</h2>
+            <div class="console" id="console"></div>
+        </div>
+    </div>
+
+    <script>
+        function log(msg, type = 'info') {
+            const console = document.getElementById('console');
+            const time = new Date().toLocaleTimeString('de-DE');
+            const color = type === 'error' ? 'color: #ff6b6b;' : type === 'success' ? 'color: #51cf66;' : 'color: #0f0;';
+            console.innerHTML += `<div style="${color}">[${time}] ${msg}</div>`;
+            console.scrollTop = console.scrollHeight;
+        }
+
+        async function checkPage(url, id) {
+            try {
+                const response = await fetch(url);
+                const html = await response.text();
+                
+                if (response.ok && html.length > 100) {
+                    document.getElementById(id).innerHTML = '✓ Seite lädt erfolgreich (' + html.length + ' bytes)';
+                    document.getElementById(id).className = 'status ok';
+                    log(`✓ ${url} → OK`, 'success');
+                } else {
+                    document.getElementById(id).innerHTML = '✗ Seite geladen aber möglicherweise leer';
+                    document.getElementById(id).className = 'status error';
+                    log(`✗ ${url} → Leer oder fehler (${response.status})`, 'error');
+                }
+            } catch (e) {
+                document.getElementById(id).innerHTML = '✗ Fehler: ' + e.message;
+                document.getElementById(id).className = 'status error';
+                log(`✗ ${url} → ${e.message}`, 'error');
+            }
+        }
+
+        async function testLogin() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const resultDiv = document.getElementById('login-result');
+            
+            try {
+                resultDiv.className = 'status loading';
+                resultDiv.innerHTML = 'Anmelden...';
+                resultDiv.style.display = 'block';
+                
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.token) {
+                    resultDiv.className = 'status ok';
+                    resultDiv.innerHTML = `✓ Login erfolgreich! Session Token: ${data.token.substring(0, 15)}...`;
+                    log(`✓ Login erfolgreich für ${email}`, 'success');
+                } else {
+                    resultDiv.className = 'status error';
+                    resultDiv.innerHTML = `✗ Login fehlgeschlagen: ${data.error || 'Unbekannter Fehler'}`;
+                    log(`✗ Login fehlgeschlagen: ${data.error}`, 'error');
+                }
+            } catch (e) {
+                resultDiv.className = 'status error';
+                resultDiv.innerHTML = `✗ Fehler: ${e.message}`;
+                log(`✗ Login Fehler: ${e.message}`, 'error');
+            }
+        }
+
+        // Beim Laden alle Pages prüfen
+        window.addEventListener('load', () => {
+            log('🚀 Starte Page Tests...', 'info');
+            checkPage('/', 'status-login');
+            checkPage('/profil', 'status-profil');
+            checkPage('/benachrichtigungen', 'status-benachrichtigungen');
+            checkPage('/passwort', 'status-passwort');
+            checkPage('/admin', 'status-admin');
+            checkPage('/events', 'status-events');
+        });
+    </script>
+</body>
+</html>

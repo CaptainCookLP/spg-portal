@@ -34,70 +34,101 @@
 
     <div id="toast" class="toast"></div>
 
-    <main class="grid">
-      <section class="card">
-        <div class="hd"><h2>Anmelden</h2></div>
-        <div class="bd">
+    <main class="login-container">
+      <section class="login-card">
+        
+        <!-- LOGIN FORM -->
+        <div id="viewLogin" class="login-view">
+          <div class="login-header">
+            <h2>Willkommen zurück</h2>
+            <p>Melden Sie sich mit Ihren Zugangsdaten an</p>
+          </div>
           
-          <!-- LOGIN FORM -->
-          <div id="viewLogin">
-            <div class="fieldgrid">
-              <div class="field">
-                <label>E-Mail</label>
-                <input id="email" type="email" autocomplete="username" />
-              </div>
-              <div class="field">
-                <label>Passwort</label>
-                <input id="password" type="password" autocomplete="current-password" />
-              </div>
+          <div class="login-form">
+            <div class="form-group">
+              <label for="email">E-Mail-Adresse</label>
+              <input id="email" type="email" placeholder="ihre.email@example.de" autocomplete="username" class="form-input" />
             </div>
-            <div class="row">
-              <button class="btn primary" id="btnLogin">Anmelden</button>
+
+            <div class="form-group">
+              <label for="password">Passwort</label>
+              <input id="password" type="password" placeholder="••••••••" autocomplete="current-password" class="form-input" />
             </div>
-            <p id="loginError" class="error"></p>
-            <div style="text-align:center;margin-top:20px">
-              <button class="btn" id="btnForgotPassword" style="font-size:14px;padding:8px 12px">Passwort vergessen?</button>
-            </div>
+
+            <p id="loginError" class="form-error"></p>
+
+            <button class="btn btn-primary btn-lg" id="btnLogin">
+              <span class="btn-text">Anmelden</span>
+              <span class="btn-loader" style="display:none">⏳</span>
+            </button>
           </div>
 
-          <!-- PASSWORD RESET REQUEST VIEW -->
-          <div id="viewForgotPassword" style="display:none">
-            <p style="margin-bottom:20px">Geben Sie Ihre E-Mail-Adresse ein, um einen Passwort-Reset-Link zu erhalten.</p>
-            <div class="fieldgrid">
-              <div class="field">
-                <label>E-Mail</label>
-                <input id="forgotEmail" type="email" autocomplete="email" />
-              </div>
-            </div>
-            <div class="row">
-              <button class="btn primary" id="btnSendReset">Passwort-Link senden</button>
-              <button class="btn" id="btnBackToLogin">Zurück</button>
-            </div>
-            <p id="forgotMsg" class="success" style="display:none;margin-top:15px"></p>
-            <p id="forgotErr" class="error"></p>
+          <div class="login-divider">oder</div>
+
+          <button class="btn btn-secondary btn-lg" id="btnForgotPassword">
+            Passwort zurücksetzen
+          </button>
+        </div>
+
+        <!-- PASSWORD RESET REQUEST VIEW -->
+        <div id="viewForgotPassword" class="login-view" style="display:none">
+          <div class="login-header">
+            <h2>Passwort vergessen?</h2>
+            <p>Geben Sie Ihre E-Mail-Adresse ein, um einen Passwort-Reset-Link zu erhalten</p>
           </div>
 
-          <!-- PASSWORD RESET VIEW -->
-          <div id="viewResetPassword" style="display:none">
-            <p style="margin-bottom:20px">Geben Sie Ihr neues Passwort ein.</p>
-            <div class="fieldgrid">
-              <div class="field">
-                <label>Neues Passwort</label>
-                <input id="resetPassword" type="password" autocomplete="new-password" placeholder="Mindestens 8 Zeichen" />
-              </div>
-              <div class="field">
-                <label>Passwort wiederholen</label>
-                <input id="resetPasswordConfirm" type="password" autocomplete="new-password" placeholder="Bestätigung" />
-              </div>
+          <div class="login-form">
+            <div class="form-group">
+              <label for="forgotEmail">E-Mail-Adresse</label>
+              <input id="forgotEmail" type="email" placeholder="ihre.email@example.de" autocomplete="email" class="form-input" />
             </div>
-            <div class="row">
-              <button class="btn primary" id="btnCompleteReset">Passwort setzen</button>
+
+            <p id="forgotErr" class="form-error"></p>
+            <p id="forgotMsg" class="form-success" style="display:none"></p>
+
+            <button class="btn btn-primary btn-lg" id="btnSendReset">
+              Reset-Link senden
+            </button>
+
+            <button class="btn btn-secondary btn-lg" id="btnBackToLogin">
+              Zurück zur Anmeldung
+            </button>
+          </div>
+        </div>
+
+        <!-- PASSWORD RESET VIEW -->
+        <div id="viewResetPassword" class="login-view" style="display:none">
+          <div class="login-header">
+            <h2>Neues Passwort setzen</h2>
+            <p>Wählen Sie ein sicheres Passwort aus</p>
+          </div>
+
+          <div class="login-form">
+            <div class="form-group">
+              <label for="resetPassword">Neues Passwort</label>
+              <input id="resetPassword" type="password" placeholder="Mindestens 8 Zeichen" autocomplete="new-password" class="form-input" />
+              <small class="form-hint">Verwenden Sie Groß- und Kleinbuchstaben, Zahlen und Sonderzeichen</small>
             </div>
-            <p id="resetMsg" class="success" style="display:none;margin-top:15px"></p>
-            <p id="resetErr" class="error"></p>
+
+            <div class="form-group">
+              <label for="resetPasswordConfirm">Passwort wiederholen</label>
+              <input id="resetPasswordConfirm" type="password" placeholder="Bestätigung" autocomplete="new-password" class="form-input" />
+            </div>
+
+            <p id="resetErr" class="form-error"></p>
+            <p id="resetMsg" class="form-success" style="display:none"></p>
+
+            <button class="btn btn-primary btn-lg" id="btnCompleteReset">
+              Passwort setzen
+            </button>
           </div>
         </div>
       </section>
+
+      <div class="login-footer">
+        <p>©2024 KG Wispelten - Mitgliederportal</p>
+        <p><small>Passwörter werden sicher verschlüsselt gespeichert</small></p>
+      </div>
     </main>
   </div>
 

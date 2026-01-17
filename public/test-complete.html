@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPG Portal - Complete Test</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f6f6f6;
+            color: #111827;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        h1 { margin: 0 0 10px; color: #b91c1c; }
+        .header { background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .test-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+        @media (max-width: 1024px) { .test-grid { grid-template-columns: 1fr; } }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+            border: 1px solid rgba(17, 24, 39, 0.1);
+        }
+        .card-header {
+            background: linear-gradient(135deg, #b91c1c 0%, #dc2626 100%);
+            color: white;
+            padding: 15px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .card-body { padding: 15px; }
+        
+        .test-item {
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border-left: 3px solid;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .test-item.loading {
+            background: #fef3c7;
+            border-left-color: #f59e0b;
+        }
+        .test-item.ok {
+            background: #d1fae5;
+            border-left-color: #10b981;
+        }
+        .test-item.error {
+            background: #fee2e2;
+            border-left-color: #dc2626;
+        }
+        .test-item.warning {
+            background: #fecaca;
+            border-left-color: #ef4444;
+        }
+        
+        .test-item-text { font-weight: 600; }
+        .test-item-status {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            background: rgba(0,0,0,0.1);
+        }
+        
+        .console {
+            background: #1f2937;
+            color: #10b981;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 15px;
+        }
+        .console-line { margin: 2px 0; }
+        .console-info { color: #60a5fa; }
+        .console-success { color: #10b981; }
+        .console-error { color: #f87171; }
+        .console-warn { color: #fbbf24; }
+        
+        input {
+            padding: 10px;
+            border: 1px solid rgba(17, 24, 39, 0.2);
+            border-radius: 6px;
+            font-size: 14px;
+            width: 250px;
+            margin-right: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #b91c1c, #dc2626);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        button:hover { background: linear-gradient(135deg, #991b1b, #b91c1c); }
+        button:disabled { opacity: 0.6; cursor: not-allowed; }
+        
+        .login-section {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #b91c1c;
+        }
+        
+        .design-check {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(185, 28, 28, 0.05);
+            border-radius: 8px;
+            border-left: 3px solid #b91c1c;
+        }
+        
+        .pages-preview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .page-link {
+            padding: 15px;
+            background: white;
+            border: 2px solid rgba(185, 28, 28, 0.2);
+            border-radius: 8px;
+            text-decoration: none;
+            color: #b91c1c;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.2s;
+        }
+        .page-link:hover {
+            background: #b91c1c;
+            color: white;
+            border-color: #b91c1c;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧪 SPG Portal - Vollständiger Test</h1>
+            <p>Überprüfung aller Pages, Funktionen und Design-Konsistenz als: <strong>fabian.koch1998@gmail.com</strong></p>
+        </div>
+
+        <div class="login-section">
+            <h3>🔐 Anmelden</h3>
+            <div>
+                <input type="email" id="email" placeholder="E-Mail" value="fabian.koch1998@gmail.com">
+                <input type="password" id="password" placeholder="Passwort" value="Start1234!">
+                <button onclick="performLogin()" id="loginBtn">Anmelden & Tests starten</button>
+            </div>
+            <div id="loginStatus" style="margin-top: 15px;"></div>
+        </div>
+
+        <div class="test-grid">
+            <!-- Seiten Test -->
+            <div class="card">
+                <div class="card-header">📄 Seiten-Test</div>
+                <div class="card-body">
+                    <div id="pagesTest"></div>
+                </div>
+            </div>
+
+            <!-- Design Check -->
+            <div class="card">
+                <div class="card-header">🎨 Design-Konsistenz</div>
+                <div class="card-body">
+                    <div id="designCheck"></div>
+                </div>
+            </div>
+
+            <!-- Funktions Test -->
+            <div class="card">
+                <div class="card-header">⚙️ Funktionen-Test</div>
+                <div class="card-body">
+                    <div id="functionsTest"></div>
+                </div>
+            </div>
+
+            <!-- Fehler Detection -->
+            <div class="card">
+                <div class="card-header">❌ Fehler & Warnungen</div>
+                <div class="card-body">
+                    <div id="errorsCheck"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pages zum manuellen Überprüfen -->
+        <div class="card" style="margin-bottom: 20px;">
+            <div class="card-header">🌐 Pages zum Überprüfen</div>
+            <div class="card-body">
+                <div class="pages-preview">
+                    <a class="page-link" href="/" target="_blank">🔐 Login</a>
+                    <a class="page-link" href="/profil" target="_blank">👤 Mein Profil</a>
+                    <a class="page-link" href="/benachrichtigungen" target="_blank">🔔 Benachrichtigungen</a>
+                    <a class="page-link" href="/passwort" target="_blank">🔑 Passwort</a>
+                    <a class="page-link" href="/admin" target="_blank">⚡ Admin</a>
+                    <a class="page-link" href="/events" target="_blank">📅 Events</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Console -->
+        <div class="card">
+            <div class="card-header">📋 Konsole</div>
+            <div class="card-body">
+                <div class="console" id="console"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const tests = {
+            pages: [],
+            design: [],
+            functions: [],
+            errors: []
+        };
+
+        let sessionToken = null;
+
+        function log(msg, type = 'info') {
+            const console = document.getElementById('console');
+            const className = `console-line console-${type}`;
+            console.innerHTML += `<div class="${className}">${msg}</div>`;
+            console.scrollTop = console.scrollHeight;
+        }
+
+        function addTest(category, title, result, status = 'ok') {
+            tests[category].push({ title, result, status });
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            // Pages Test
+            let pagesHtml = '';
+            tests.pages.forEach(t => {
+                pagesHtml += `<div class="test-item ${t.status}">
+                    <div class="test-item-text">${t.title}</div>
+                    <div class="test-item-status">${t.result}</div>
+                </div>`;
+            });
+            document.getElementById('pagesTest').innerHTML = pagesHtml || '<p style="color:#999;">Warte auf Tests...</p>';
+
+            // Design Check
+            let designHtml = '';
+            tests.design.forEach(t => {
+                designHtml += `<div class="test-item ${t.status}">
+                    <div class="test-item-text">${t.title}</div>
+                    <div class="test-item-status">${t.result}</div>
+                </div>`;
+            });
+            document.getElementById('designCheck').innerHTML = designHtml || '<p style="color:#999;">Warte auf Tests...</p>';
+
+            // Functions Test
+            let functionsHtml = '';
+            tests.functions.forEach(t => {
+                functionsHtml += `<div class="test-item ${t.status}">
+                    <div class="test-item-text">${t.title}</div>
+                    <div class="test-item-status">${t.result}</div>
+                </div>`;
+            });
+            document.getElementById('functionsTest').innerHTML = functionsHtml || '<p style="color:#999;">Warte auf Tests...</p>';
+
+            // Errors
+            let errorsHtml = '';
+            tests.errors.forEach(t => {
+                errorsHtml += `<div class="test-item ${t.status}">
+                    <div class="test-item-text">${t.title}</div>
+                    <div class="test-item-status">${t.result}</div>
+                </div>`;
+            });
+            document.getElementById('errorsCheck').innerHTML = errorsHtml || '<p style="color:#10b981;">✓ Keine Fehler gefunden</p>';
+        }
+
+        async function performLogin() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            document.getElementById('loginBtn').disabled = true;
+            addTest('pages', '🔐 Login', 'wird geprüft...', 'loading');
+            log(`[LOGIN] Versuche Anmeldung mit ${email}...`, 'info');
+
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.token) {
+                    sessionToken = data.token;
+                    addTest('pages', '🔐 Login', '✓ Erfolgreich', 'ok');
+                    log(`✓ Login erfolgreich!`, 'success');
+                    document.getElementById('loginStatus').innerHTML = '<div class="test-item ok"><strong>✓ Angemeldet als ' + email + '</strong></div>';
+                    
+                    await runAllTests();
+                } else {
+                    addTest('pages', '🔐 Login', `✗ ${data.error}`, 'error');
+                    log(`✗ Login fehlgeschlagen: ${data.error}`, 'error');
+                }
+            } catch (e) {
+                addTest('pages', '🔐 Login', `✗ ${e.message}`, 'error');
+                log(`✗ Login Fehler: ${e.message}`, 'error');
+            }
+
+            document.getElementById('loginBtn').disabled = false;
+        }
+
+        async function runAllTests() {
+            log('🚀 Starte Page-Tests...', 'info');
+            
+            const pages = [
+                { url: '/', name: '🔐 Login' },
+                { url: '/profil', name: '👤 Profil' },
+                { url: '/benachrichtigungen', name: '🔔 Benachrichtigungen' },
+                { url: '/passwort', name: '🔑 Passwort' },
+                { url: '/admin', name: '⚡ Admin' },
+                { url: '/events', name: '📅 Events' }
+            ];
+
+            for (const page of pages) {
+                await testPage(page.url, page.name);
+            }
+
+            log('✓ Alle Tests abgeschlossen!', 'success');
+        }
+
+        async function testPage(url, name) {
+            try {
+                const response = await fetch(url);
+                const html = await response.text();
+
+                // Basis-Tests
+                if (response.ok && html.length > 200) {
+                    addTest('pages', name, `✓ Lädt (${html.length} bytes)`, 'ok');
+                    log(`✓ ${name} lädt erfolgreich`, 'success');
+
+                    // Design-Checks
+                    checkDesign(html, name);
+                    
+                    // Funktions-Checks
+                    checkFunctions(html, name);
+                    
+                    // Fehler-Checks
+                    checkErrors(html, name);
+                } else {
+                    addTest('pages', name, `✗ HTTP ${response.status}`, 'error');
+                    log(`✗ ${name} - HTTP ${response.status}`, 'error');
+                }
+            } catch (e) {
+                addTest('pages', name, `✗ ${e.message}`, 'error');
+                log(`✗ ${name} - ${e.message}`, 'error');
+            }
+        }
+
+        function checkDesign(html, name) {
+            let status = 'ok';
+            let issues = [];
+
+            // Prüfe auf wichtige Design-Elemente
+            if (html.includes('class="login-container"') || html.includes('class="card"')) {
+                issues.push('✓ Container-Struktur ok');
+            } else if (html.includes('<main')) {
+                issues.push('⚠ Alternative Main-Struktur');
+            }
+
+            if (html.includes('var(--accent)') || html.includes('#b91c1c') || html.includes('--text') || html.includes('--card')) {
+                issues.push('✓ CSS-Variablen genutzt');
+            }
+
+            if (html.includes('border-radius') || html.includes('box-shadow') || html.includes('gradient')) {
+                issues.push('✓ Modernes Styling vorhanden');
+            }
+
+            if (html.includes('responsive') || html.includes('@media')) {
+                issues.push('✓ Responsive Design');
+            }
+
+            if (issues.length === 0) {
+                status = 'warning';
+                issues.push('⚠ Basis-Styling vorhanden');
+            }
+
+            addTest('design', name, issues.join(' | '), status);
+        }
+
+        function checkFunctions(html, name) {
+            let status = 'ok';
+            let issues = [];
+
+            if (html.includes('<form') || html.includes('type="email"') || html.includes('type="password"')) {
+                issues.push('✓ Formulare vorhanden');
+            }
+
+            if (html.includes('onclick') || html.includes('addEventListener') || html.includes('<script')) {
+                issues.push('✓ JavaScript vorhanden');
+            }
+
+            if (html.includes('fetch') || html.includes('XMLHttpRequest') || html.includes('/api/')) {
+                issues.push('✓ API-Calls möglich');
+            }
+
+            if (issues.length === 0) {
+                status = 'warning';
+                issues.push('⚠ Standard HTML');
+            }
+
+            addTest('functions', name, issues.join(' | '), status);
+        }
+
+        function checkErrors(html, name) {
+            let errors = [];
+
+            // Suche nach häufigen Fehlern
+            if (html.includes('undefined') && html.includes('console.error')) {
+                errors.push('Mögliche undefined-Fehler');
+            }
+
+            if (html.includes('404') && !html.includes('status: 404')) {
+                errors.push('404 Resource nicht gefunden');
+            }
+
+            if (html.includes('ERROR') || html.includes('Error:')) {
+                errors.push('Fehler in HTML erkannt');
+            }
+
+            if (errors.length === 0) {
+                addTest('errors', `${name}`, '✓ Keine Fehler', 'ok');
+            } else {
+                errors.forEach(e => {
+                    addTest('errors', `${name}`, `⚠ ${e}`, 'warning');
+                });
+            }
+        }
+
+        // Initial load
+        updateDisplay();
+        log('🚀 Test-Suite geladen. Bitte anmelden um Tests zu starten.', 'info');
+    </script>
+</body>
+</html>

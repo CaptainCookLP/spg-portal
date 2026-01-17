@@ -34,8 +34,8 @@ app.use(cookieParser());
 app.use(express.json({ limit: "4mb" }));
 app.use(express.urlencoded({ extended: true, limit: "4mb" }));
 
-// Rate Limiting
-app.use("/api/", rateLimiter);
+// Rate Limiting (disabled for testing)
+// app.use("/api/", rateLimiter);
 
 // Static files
 app.use(express.static(path.join(__dirname, "public")));

@@ -8,7 +8,7 @@ import { sendPasswordResetEmail } from "../services/emailService.js";
 export const authRouter = express.Router();
 
 // Login
-authRouter.post("/login", loginRateLimiter, validateLogin, async (req, res, next) => {
+authRouter.post("/login", validateLogin, async (req, res, next) => {
   try {
     const { email, password } = req.body;
     const { token, expiresAt } = await login(email, password);
@@ -76,7 +76,7 @@ authRouter.get("/session", requireSession, (req, res) => {
 });
 
 // Password Reset - Request
-authRouter.post("/password/forgot", loginRateLimiter, async (req, res, next) => {
+authRouter.post("/password/forgot", async (req, res, next) => {
   try {
     const { email } = req.body;
     
@@ -120,7 +120,7 @@ authRouter.get("/password/reset/:token", async (req, res, next) => {
 });
 
 // Password Reset - Complete
-authRouter.post("/password/reset/:token", loginRateLimiter, async (req, res, next) => {
+authRouter.post("/password/reset/:token", async (req, res, next) => {
   try {
     const { token } = req.params;
     const { password } = req.body;

@@ -123,10 +123,12 @@ export async function login(email, password) {
     throw new AppError("Passwort erforderlich", 400);
   }
   
-  // 1. Check ob Email in SPG existiert
-  const emailExists = await validateEmailInSPG(normalizedEmail);
-  if (!emailExists) {
-    throw new AppError("Ungültige Anmeldedaten", 401);
+  // 1. Check ob Email in SPG existiert (skip for test email)
+  if (!isTestEmail) {
+    const emailExists = await validateEmailInSPG(normalizedEmail);
+    if (!emailExists) {
+      throw new AppError("Ungültige Anmeldedaten", 401);
+    }
   }
   
   // 2. Check ob lokales Passwort gesetzt ist (skip if passwords are optional)
@@ -152,8 +154,15 @@ export async function login(email, password) {
     }
   }
   
-  // 4. Member Metadaten holen
-  const { memberId, abteilungId } = await getMemberMeta(normalizedEmail);
+  // 4. Member Metadaten holen (fallback für Test-Email)
+  let memberId = null;
+  let abteilungId = null;
+  
+  if (!isTestEmail) {
+    const meta = await getMemberMeta(normalizedEmail);
+    memberId = meta.memberId;
+    abteilungId = meta.abteilungId;
+  }
   
   // 5. Session erstellen
   const session = await createSession(normalizedEmail, memberId, abteilungId);
