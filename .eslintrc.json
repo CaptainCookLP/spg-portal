@@ -1,0 +1,33 @@
+{
+  "env": {
+    "node": true,
+    "es2022": true,
+    "browser": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 2022,
+    "sourceType": "module"
+  },
+  "rules": {
+    "no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
+    "no-console": "off",
+    "semi": ["error", "always"],
+    "quotes": ["warn", "double", { "allowTemplateLiterals": true }]
+  },
+  "globals": {
+    "$": "readonly",
+    "$$": "readonly",
+    "api": "readonly",
+    "ApiError": "readonly",
+    "appState": "readonly",
+    "checkAuth": "readonly",
+    "toast": "readonly",
+    "fmtDate": "readonly",
+    "escapeHtml": "readonly",
+    "fullName": "readonly",
+    "yearsSince": "readonly",
+    "debounce": "readonly",
+    "loadPublicSettings": "readonly",
+    "logout": "readonly"
+  }
+}

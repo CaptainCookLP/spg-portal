@@ -108,7 +108,7 @@ function escapeHtml(str) {
     "&": "&amp;",
     "<": "&lt;",
     ">": "&gt;",
-    '"': "&quot;",
+    "\"": "&quot;",
     "'": "&#39;"
   };
   return String(str).replace(/[&<>"']/g, char => chars[char]);

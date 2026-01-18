@@ -136,6 +136,14 @@ app.get("/events", requireAuthPage, (req, res) => {
   res.send(html);
 });
 
+// Mitgliedskarte Page
+app.get("/mitgliedskarte", requireAuthPage, (req, res) => {
+  const html = renderTemplate(path.join(__dirname, "public", "pages", "mitgliedskarte.html"), {
+    USER_EMAIL: req.user.email
+  });
+  res.send(html);
+});
+
 // Reset Password Page (Public)
 app.get("/reset-password", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "pages", "reset-password.html"));

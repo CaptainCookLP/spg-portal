@@ -2,7 +2,7 @@ import express from "express";
 import { login, logout, changePassword, createPasswordResetToken, validatePasswordResetToken, completePasswordReset } from "../services/authService.js";
 import { requireSession } from "../middleware/auth.js";
 import { validateLogin, validatePasswordChange } from "../middleware/validation.js";
-import { loginRateLimiter } from "../middleware/rateLimiter.js";
+// import { loginRateLimiter } from "../middleware/rateLimiter.js"; // Currently disabled
 import { sendPasswordResetEmail } from "../services/emailService.js";
 
 export const authRouter = express.Router();

@@ -44,6 +44,7 @@
       <a href="/passwort" class="nav-item">Passwort</a>
       <a href="/admin" class="nav-item" id="navAdmin" style="display:none">Admin</a>
       <a href="/events" class="nav-item active">Events</a>
+      <a href="/mitgliedskarte" class="nav-item">Karte</a>
     </nav>
 
     <div id="toast" class="toast"></div>
@@ -52,16 +53,85 @@
       <div class="card">
         <div class="hd">
           <h2>Events</h2>
-          <button class="btn primary" id="btnNewEvent" style="display:none">Neuer Event</button>
+          <div style="display:flex;gap:10px;align-items:center">
+            <div class="view-toggle">
+              <button id="viewList" class="active">Liste</button>
+              <button id="viewCalendar">Kalender</button>
+            </div>
+            <button class="btn primary" id="btnNewEvent" style="display:none">+ Neuer Event</button>
+          </div>
         </div>
         <div class="bd">
-          <div id="eventList"></div>
-          <p id="eventsEmpty" class="muted" style="text-align:center;padding:20px">Keine Events</p>
+          <!-- List View -->
+          <div id="listView">
+            <div id="eventList"></div>
+            <p id="eventsEmpty" class="muted" style="text-align:center;padding:20px">Keine Events</p>
+          </div>
+          <!-- Calendar View -->
+          <div id="calendarView" style="display:none">
+            <div class="calendar-header">
+              <h3 id="calendarTitle">Januar 2026</h3>
+              <div class="calendar-nav">
+                <button class="btn small" id="calPrev">&larr;</button>
+                <button class="btn small" id="calToday">Heute</button>
+                <button class="btn small" id="calNext">&rarr;</button>
+              </div>
+            </div>
+            <div class="calendar-container" id="calendarGrid"></div>
+          </div>
         </div>
       </div>
-      
+
       <p id="eventsError" class="error"></p>
     </main>
+  </div>
+
+  <!-- Event Modal -->
+  <div class="modalBack" id="eventModal" style="display:none">
+    <div class="modal">
+      <div class="hd">
+        <h2 id="eventModalTitle">Neuer Event</h2>
+        <button class="btn" id="closeEventModal">&times;</button>
+      </div>
+      <div class="bd">
+        <div class="fieldgrid">
+          <div class="field">
+            <label>Titel *</label>
+            <input type="text" id="eventTitle" placeholder="Event-Titel" />
+          </div>
+          <div class="field">
+            <label>Datum & Uhrzeit *</label>
+            <input type="datetime-local" id="eventDate" />
+          </div>
+          <div class="field">
+            <label>Ort</label>
+            <input type="text" id="eventLocation" placeholder="Veranstaltungsort" />
+          </div>
+          <div class="field">
+            <label>Preis (EUR)</label>
+            <input type="text" id="eventPrice" placeholder="0,00" />
+          </div>
+        </div>
+        <div class="field" style="margin-top:12px">
+          <label>Beschreibung</label>
+          <textarea id="eventDescription" placeholder="Beschreibung des Events..."></textarea>
+        </div>
+        <div class="fieldgrid" style="margin-top:12px">
+          <div class="field">
+            <label>Sichtbarkeit</label>
+            <select id="eventVisibility">
+              <option value="all">Alle Mitglieder</option>
+              <option value="public">Öffentlich</option>
+            </select>
+          </div>
+        </div>
+        <p id="eventModalError" class="error" style="margin-top:12px"></p>
+        <div class="row" style="justify-content:flex-end">
+          <button class="btn" id="cancelEventModal">Abbrechen</button>
+          <button class="btn primary" id="saveEvent">Event speichern</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script src="/shared/utils.js"></script>

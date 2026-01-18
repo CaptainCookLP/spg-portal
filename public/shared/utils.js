@@ -62,7 +62,10 @@ function escapeHtml(str) {
 }
 
 function fullName(member) {
-  return [member.Vorname, member.Nachname]
+  // Unterstützt sowohl lowercase (vorname) als auch uppercase (Vorname) Feldnamen
+  const vorname = member.vorname || member.Vorname || "";
+  const nachname = member.nachname || member.Nachname || "";
+  return [vorname, nachname]
     .filter(Boolean)
     .join(" ")
     .trim() || "(Ohne Namen)";

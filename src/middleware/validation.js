@@ -1,4 +1,4 @@
-import { body, param, query, validationResult } from "express-validator";
+import { body, param, validationResult } from "express-validator";
 import { AppError } from "./errorHandler.js";
 
 export function validate(req, res, next) {

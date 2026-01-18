@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Passwort ändern - Mitgliederportal</title>
-  
+  <title>Mitgliedskarte - Mitgliederportal</title>
+
   <link rel="manifest" href="/manifest.json">
   <link rel="icon" href="/icon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="/styles.css">
-  
+
   <meta name="theme-color" content="#b91c1c">
-  <meta name="description" content="Mitgliederportal für SPG Verein">
+  <meta name="description" content="Digitale Mitgliedskarte">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Portal">
@@ -22,18 +22,18 @@
         <div class="logo" id="logoBox">W</div>
         <div>
           <h1 id="siteTitle">Mitgliederportal</h1>
-          <p id="siteSub" class="muted">Passwort ändern</p>
+          <p id="siteSub" class="muted">Mitgliedskarte</p>
         </div>
       </div>
-      
+
       <div class="actions">
         <button class="btn" id="btnInstall" style="display:none">App installieren</button>
         <button class="btn" id="btnEnableNotif" style="display:none">Benachrichtigungen</button>
-        
+
         <div class="pill" id="pillUser">
           👤 <span id="userEmail"></span>
         </div>
-        
+
         <button class="btn danger" id="btnLogout">Logout</button>
       </div>
     </header>
@@ -41,51 +41,42 @@
     <nav class="topnav">
       <a href="/profil" class="nav-item">Profil</a>
       <a href="/benachrichtigungen" class="nav-item">Benachrichtigungen <span class="badge" id="notifBadge" style="display:none"></span></a>
-      <a href="/passwort" class="nav-item active">Passwort</a>
+      <a href="/passwort" class="nav-item">Passwort</a>
       <a href="/admin" class="nav-item" id="navAdmin" style="display:none">Admin</a>
       <a href="/events" class="nav-item">Events</a>
-      <a href="/mitgliedskarte" class="nav-item">Karte</a>
+      <a href="/mitgliedskarte" class="nav-item active">Karte</a>
     </nav>
 
     <div id="toast" class="toast"></div>
 
-    <main class="grid">
-      <div class="card" style="max-width:400px">
+    <main style="max-width:500px;margin:20px auto;padding:0 14px">
+      <div class="card">
         <div class="hd">
-          <h2>Passwort ändern</h2>
+          <h2>Digitale Mitgliedskarte</h2>
+          <button class="btn small" id="btnDownload">Download</button>
         </div>
         <div class="bd">
-          <div class="field">
-            <label>Aktuelles Passwort</label>
-            <input id="currentPassword" type="password" />
+          <div id="memberCardContainer">
+            <p class="muted" style="text-align:center">Lade Mitgliedsdaten...</p>
           </div>
-          
-          <div class="field">
-            <label>Neues Passwort</label>
-            <input id="newPassword" type="password" />
-            <div class="password-strength">
-              <div class="password-strength-bar" id="strengthBar"></div>
-            </div>
-            <div class="password-strength-text" id="strengthText"></div>
+
+          <div class="hint" style="margin-top:20px;text-align:center">
+            Zeige diese Karte bei Veranstaltungen vor.<br>
+            Der QR-Code enthält deine Mitglieds-ID.
           </div>
-          
-          <div class="field">
-            <label>Neues Passwort wiederholen</label>
-            <input id="confirmPassword" type="password" />
-          </div>
-          
-          <button class="btn primary" id="btnChangePassword">Passwort ändern</button>
-          
-          <p id="passwordError" class="error" style="margin-top:15px"></p>
-          <p id="passwordSuccess" class="success" style="margin-top:15px"></p>
         </div>
       </div>
+
+      <p id="cardError" class="error" style="margin-top:15px"></p>
     </main>
   </div>
+
+  <!-- QR Code Library -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
 
   <script src="/shared/utils.js"></script>
   <script src="/shared/api.js"></script>
   <script src="/shared/auth.js"></script>
-  <script src="/pages/passwort.js"></script>
+  <script src="/pages/mitgliedskarte.js"></script>
 </body>
 </html>

@@ -69,7 +69,7 @@ export function updateEnvFile(updates) {
       safeValue.includes("=");
     
     const formatted = needsQuotes 
-      ? `"${safeValue.replaceAll('"', '\\"')}"` 
+      ? `"${safeValue.replaceAll("\"", "\\\"")}"` 
       : safeValue;
     
     if (keyToLineIdx.has(key)) {

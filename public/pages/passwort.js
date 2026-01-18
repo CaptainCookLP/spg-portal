@@ -10,8 +10,47 @@ const $el = {
   confirmPassword: $("confirmPassword"),
   changeBtn: $("btnChangePassword"),
   error: $("passwordError"),
-  success: $("passwordSuccess")
+  success: $("passwordSuccess"),
+  strengthBar: $("strengthBar"),
+  strengthText: $("strengthText")
 };
+
+// Password strength checker
+function checkPasswordStrength(password) {
+  let score = 0;
+  const checks = {
+    length: password.length >= 8,
+    uppercase: /[A-Z]/.test(password),
+    lowercase: /[a-z]/.test(password),
+    numbers: /[0-9]/.test(password),
+    special: /[^A-Za-z0-9]/.test(password),
+    longLength: password.length >= 12
+  };
+
+  if (checks.length) score++;
+  if (checks.uppercase) score++;
+  if (checks.lowercase) score++;
+  if (checks.numbers) score++;
+  if (checks.special) score++;
+  if (checks.longLength) score++;
+
+  if (score <= 2) return { level: "weak", text: "Schwach", class: "weak" };
+  if (score <= 3) return { level: "fair", text: "Ausreichend", class: "fair" };
+  if (score <= 4) return { level: "good", text: "Gut", class: "good" };
+  return { level: "strong", text: "Stark", class: "strong" };
+}
+
+function updateStrengthIndicator(password) {
+  if (!password) {
+    $el.strengthBar.className = "password-strength-bar";
+    $el.strengthText.textContent = "";
+    return;
+  }
+
+  const strength = checkPasswordStrength(password);
+  $el.strengthBar.className = `password-strength-bar ${strength.class}`;
+  $el.strengthText.textContent = `Passwortstärke: ${strength.text}`;
+}
 
 // Initialize
 document.addEventListener("DOMContentLoaded", async () => {
@@ -19,9 +58,14 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (!isLoggedIn) {
     return;
   }
-  
+
   $el.changeBtn.addEventListener("click", changePassword);
-  
+
+  // Password strength indicator
+  $el.newPassword.addEventListener("input", () => {
+    updateStrengthIndicator($el.newPassword.value);
+  });
+
   // Allow Enter key
   [$el.currentPassword, $el.newPassword, $el.confirmPassword].forEach(input => {
     input.addEventListener("keypress", (e) => {

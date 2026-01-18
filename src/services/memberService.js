@@ -38,13 +38,33 @@ export async function getMembersByEmail(email) {
   
   const members = result.recordset || [];
   
-  // Sensitive Daten maskieren
+  // Map zu Frontend-Feldnamen (lowercase) und sensible Daten maskieren
   return members.map(m => ({
-    ...m,
-    IBAN_masked: maskIban(m.IBAN_Nr),
-    BIC_masked: maskBic(m.BIC_Nr),
-    IBAN_Nr: undefined, // Entfernen
-    BIC_Nr: undefined   // Entfernen
+    id: String(m.MitgliedID),
+    anrede: m.Anrede || "",
+    titel: m.Titel || "",
+    vorname: m.Vorname || "",
+    nachname: m.Nachname || "",
+    strasse: m.Adresse || "",
+    plz: m.PLZ || "",
+    ort: m.Ort || "",
+    land: m.Land || "",
+    telPriv: m.Telefon_Privat || "",
+    telDienst: m.Telefon_Dienstlich || "",
+    handy1: m.Handy_1 || "",
+    handy2: m.Handy_2 || "",
+    email: m.Email || "",
+    eintritt: m.Eintritt_Datum || null,
+    austritt: m.Austritt_Datum || null,
+    abteilung: m.Abteilung || "",
+    beitrag: m.Einmalbetrag_1 || "",
+    mandatRef: m.Sepa_Mandats_Ref || "",
+    mandatDatum: m.Sepa_Datum_Mandats_Ref || null,
+    extern: m.Extern,
+    dsgvo: !!m.DSGVOZugestimmt,
+    dsgvoDatum: m.DSGVOZugestimmtAm || null,
+    ibanMasked: maskIban(m.IBAN_Nr),
+    bicMasked: maskBic(m.BIC_Nr)
   }));
 }
 

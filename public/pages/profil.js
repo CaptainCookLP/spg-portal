@@ -127,7 +127,7 @@ function setActiveMember(memberId) {
   $el.ort.value = member.ort || "";
   $el.email.value = member.email || "";
   $el.abteilung.value = member.abteilung || "";
-  $el.mitgliedSeit.value = member.mitgliedSeit || "";
+  $el.mitgliedSeit.value = member.eintritt ? yearsSince(member.eintritt) : "-";
   $el.handy1.value = member.handy1 || "";
   $el.telPriv.value = member.telPriv || "";
   $el.telDienst.value = member.telDienst || "";
@@ -136,8 +136,8 @@ function setActiveMember(memberId) {
   $el.bicMasked.value = member.bicMasked || "";
   $el.beitrag.value = member.beitrag || "";
   $el.mitgliedId.textContent = member.id || "-";
-  $el.eintritt.textContent = member.eintritt ? fmtDate(new Date(member.eintritt)) : "-";
-  $el.austritt.textContent = member.austritt ? fmtDate(new Date(member.austritt)) : "-";
+  $el.eintritt.textContent = member.eintritt ? fmtDate(member.eintritt) : "-";
+  $el.austritt.textContent = member.austritt ? fmtDate(member.austritt) : "-";
   $el.dsgvo.textContent = member.dsgvo ? "✓ Zugestimmt" : "✗ Nicht zugestimmt";
   
   // Reset edit mode
