@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mitgliedschaft verifizieren - Mitgliederportal</title>
+
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css">
+
+  <meta name="theme-color" content="#b91c1c">
+  <meta name="description" content="Mitgliedschaft verifizieren">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Portal">
+</head>
+<body>
+  <div class="wrap">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo" id="logoBox">W</div>
+        <div>
+          <h1 id="siteTitle">Mitgliederportal</h1>
+          <p id="siteSub" class="muted">Mitgliedschaft verifizieren</p>
+        </div>
+      </div>
+    </header>
+
+    <div id="toast" class="toast"></div>
+
+    <main style="max-width:600px;margin:40px auto;padding:0 14px">
+      <div class="card">
+        <div class="hd">
+          <h2>Mitgliedschaft verifizieren</h2>
+        </div>
+        <div class="bd">
+          <div id="verifyContent">
+            <p class="muted" style="text-align:center">Lade Mitgliedsdaten...</p>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/shared/utils.js"></script>
+  <script src="/shared/api.js"></script>
+  <script src="/pages/verify.js"></script>
+</body>
+</html>

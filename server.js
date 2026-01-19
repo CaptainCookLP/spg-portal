@@ -149,6 +149,11 @@ app.get("/reset-password", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "pages", "reset-password.html"));
 });
 
+// Verify Page (Public)
+app.get("/verify", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "pages", "verify.html"));
+});
+
 // Error Handler (muss am Ende sein)
 app.use(errorHandler);
 
