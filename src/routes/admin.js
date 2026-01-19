@@ -3,6 +3,7 @@ import { requireAdmin } from "../middleware/auth.js";
 import { getAllSettings, updateEnvFile } from "../config/settings.js";
 import { sendTestEmail } from "../services/emailService.js";
 import { searchMembers } from "../services/memberService.js";
+import { createNotification } from "../services/notificationService.js";
 import { AppError } from "../middleware/errorHandler.js";
 
 export const adminRouter = express.Router();
@@ -18,15 +19,15 @@ adminRouter.get("/settings", requireAdmin, async (req, res, next) => {
 });
 
 // Settings speichern
-adminRouter.post("/settings", requireAdmin, async (req, res, next) => {
+adminRouter.put("/settings", requireAdmin, async (req, res, next) => {
   try {
     const updates = {};
     const body = req.body;
-    
+
     // Branding
-    if (body.siteTitle !== undefined) updates.SITE_TITLE = body.siteTitle;
     if (body.orgName !== undefined) updates.ORG_NAME = body.orgName;
     if (body.logoUrl !== undefined) updates.LOGO_URL = body.logoUrl;
+    if (body.adminEmail !== undefined) updates.ADMIN_EMAIL = body.adminEmail;
     if (body.dsgvoUrl !== undefined) updates.DSGVO_URL = body.dsgvoUrl;
     
     // Theme
@@ -74,17 +75,37 @@ adminRouter.post("/settings", requireAdmin, async (req, res, next) => {
   }
 });
 
+// SMTP Update
+adminRouter.put("/smtp", requireAdmin, async (req, res, next) => {
+  try {
+    const { host, port, user, password, from } = req.body;
+
+    const updates = {};
+    if (host !== undefined) updates.SMTP_HOST = host;
+    if (port !== undefined) updates.SMTP_PORT = String(port);
+    if (user !== undefined) updates.SMTP_USER = user;
+    if (password && password.trim() !== "") updates.SMTP_PASS = password;
+    if (from !== undefined) updates.SMTP_FROM_EMAIL = from;
+
+    updateEnvFile(updates);
+
+    res.json({ ok: true });
+  } catch (error) {
+    next(error);
+  }
+});
+
 // SMTP Test
 adminRouter.post("/smtp/test", requireAdmin, async (req, res, next) => {
   try {
     const { to } = req.body;
-    
+
     if (!to) {
       throw new AppError("Empfänger-Adresse fehlt", 400);
     }
-    
+
     await sendTestEmail(to);
-    
+
     res.json({ ok: true });
   } catch (error) {
     next(error);
@@ -95,13 +116,71 @@ adminRouter.post("/smtp/test", requireAdmin, async (req, res, next) => {
 adminRouter.get("/members", requireAdmin, async (req, res, next) => {
   try {
     const { q } = req.query;
-    
+
     if (!q || q.length < 2) {
       return res.json({ items: [] });
     }
-    
+
     const members = await searchMembers(q);
     res.json({ items: members });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Member Search for Notifications
+adminRouter.get("/members/search", requireAdmin, async (req, res, next) => {
+  try {
+    const { q } = req.query;
+
+    if (!q || q.length < 2) {
+      return res.json([]);
+    }
+
+    const members = await searchMembers(q);
+    res.json(members);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Send Notification
+adminRouter.post("/notifications", requireAdmin, async (req, res, next) => {
+  try {
+    const { title, message, target, memberIds } = req.body;
+
+    if (!title || !message) {
+      throw new AppError("Titel und Nachricht erforderlich", 400);
+    }
+
+    // Build targets based on selection
+    let targets = [];
+
+    if (target === "all") {
+      targets = [{ type: "all" }];
+    } else if (target === "admins") {
+      // TODO: Implement admin targeting if needed
+      targets = [{ type: "all" }]; // For now, send to all
+    } else if (target === "selected") {
+      if (!Array.isArray(memberIds) || memberIds.length === 0) {
+        throw new AppError("Keine Mitglieder ausgewählt", 400);
+      }
+      targets = memberIds.map(id => ({ type: "mitglied_id", value: id }));
+    } else {
+      throw new AppError("Ungültiges Target", 400);
+    }
+
+    const notificationId = await createNotification({
+      title,
+      bodyText: message,
+      bodyHtml: `<p>${message.replace(/\n/g, "<br>")}</p>`,
+      sendEmail: true,
+      targets,
+      attachments: [],
+      createdBy: req.user.email
+    });
+
+    res.json({ ok: true, id: notificationId });
   } catch (error) {
     next(error);
   }

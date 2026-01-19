@@ -8,7 +8,7 @@ const appState = {
   isLoggedIn: false,
   isAdmin: false,
   unreadCount: 0,
-  darkMode: localStorage.getItem("darkMode") === "true"
+  darkMode: false // Will be loaded from server per user
 };
 
 // Check if user is logged in
@@ -18,6 +18,10 @@ async function checkAuth() {
     appState.isLoggedIn = true;
     appState.user = { email: data.email };
     appState.isAdmin = data.isAdmin || false;
+    appState.darkMode = data.darkMode || false;
+
+    // Apply dark mode from server
+    document.documentElement.classList.toggle("dark", appState.darkMode);
 
     // Show user info
     const pillUser = $("pillUser");
@@ -133,10 +137,19 @@ async function loadPublicSettings() {
 }
 
 // Dark Mode Toggle
-function toggleDarkMode() {
+async function toggleDarkMode() {
   appState.darkMode = !appState.darkMode;
   document.documentElement.classList.toggle("dark", appState.darkMode);
-  localStorage.setItem("darkMode", appState.darkMode);
+
+  // Save to server
+  try {
+    await api("/api/profile/preferences", {
+      method: "PUT",
+      body: { darkMode: appState.darkMode }
+    });
+  } catch (error) {
+    console.error("Failed to save dark mode preference:", error);
+  }
 
   // Update toggle button icon
   const toggle = $("themeToggle");

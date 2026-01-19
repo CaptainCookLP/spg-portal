@@ -51,14 +51,22 @@ async function renderMemberCard(member) {
   const memberId = member.id || "";
   const abteilung = member.abteilung || "";
   const eintritt = member.eintritt;
+  const geburtsdatum = member.geburtsdatum;
 
-  // Create QR code data
-  const qrData = JSON.stringify({
+  // Create member token for verification (base64 encoded JSON)
+  const tokenData = {
     id: memberId,
     name: `${vorname} ${nachname}`,
-    email: memberData.email,
+    geburtsdatum: geburtsdatum ? new Date(geburtsdatum).toISOString().split('T')[0] : null,
+    abteilung: abteilung,
     valid: new Date().getFullYear()
-  });
+  };
+
+  const token = btoa(JSON.stringify(tokenData));
+  const verifyUrl = `${window.location.origin}/verify?token=${token}`;
+
+  // Create QR code data with verify URL
+  const qrData = verifyUrl;
 
   container.innerHTML = `
     <div class="member-card" id="memberCard">
@@ -75,6 +83,7 @@ async function renderMemberCard(member) {
         <div class="member-card-info">
           <div class="member-card-name">${escapeHtml(vorname)} ${escapeHtml(nachname)}</div>
           <div class="member-card-id">Mitglieds-Nr: ${escapeHtml(memberId)}</div>
+          ${geburtsdatum ? `<div class="member-card-dept">Geboren: ${fmtDate(geburtsdatum)}</div>` : ""}
           ${abteilung ? `<div class="member-card-dept">${escapeHtml(abteilung)}</div>` : ""}
         </div>
       </div>
@@ -83,6 +92,13 @@ async function renderMemberCard(member) {
         <span>Mitglied seit: ${fmtDate(eintritt)}</span>
         <span>Gültig: ${new Date().getFullYear()}</span>
       </div>
+    </div>
+
+    <div style="margin-top:20px;padding:15px;background:var(--card);border-radius:12px;border:1px solid var(--border)">
+      <div style="font-size:13px;font-weight:600;margin-bottom:8px">Verifikations-Link</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:8px">Verwende diesen Link zur digitalen Verifikation deiner Mitgliedschaft:</div>
+      <input type="text" readonly value="${escapeHtml(verifyUrl)}" style="width:100%;padding:8px;font-size:11px;border:1px solid var(--border);border-radius:8px;background:var(--bg)" onclick="this.select()" />
+      <button class="btn small" style="margin-top:8px" onclick="navigator.clipboard.writeText('${escapeHtml(verifyUrl)}').then(() => toast('Link kopiert'))">Link kopieren</button>
     </div>
   `;
 

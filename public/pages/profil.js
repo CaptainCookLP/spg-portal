@@ -17,7 +17,7 @@ const $el = {
   cancel: $("btnCancel"),
   memberTabs: $("memberTabs"),
   memberTitle: $("memberTitle"),
-  
+
   vorname: $("fVorname"),
   nachname: $("fNachname"),
   strasse: $("fStrasse"),
@@ -30,14 +30,16 @@ const $el = {
   telPriv: $("fTelPriv"),
   telDienst: $("fTelDienst"),
   mandatRef: $("fMandatRef"),
-  ibanMasked: $("fIbanMasked"),
-  bicMasked: $("fBicMasked"),
+  iban: $("fIban"),
+  bic: $("fBic"),
+  btnToggleIban: $("btnToggleIban"),
+  btnToggleBic: $("btnToggleBic"),
   beitrag: $("fBeitrag"),
   mitgliedId: $("fMitgliedId"),
   eintritt: $("fEintritt"),
   austritt: $("fAustritt"),
   dsgvo: $("fDsgvo"),
-  
+
   error: $("profileError")
 };
 
@@ -132,9 +134,15 @@ function setActiveMember(memberId) {
   $el.telPriv.value = member.telPriv || "";
   $el.telDienst.value = member.telDienst || "";
   $el.mandatRef.value = member.mandatRef || "";
-  $el.ibanMasked.value = member.ibanMasked || "";
-  $el.bicMasked.value = member.bicMasked || "";
-  $el.beitrag.value = member.beitrag || "";
+  $el.iban.value = member.iban || "";
+  $el.bic.value = member.bic || "";
+  $el.iban.type = "password"; // Always start masked
+  $el.bic.type = "password"; // Always start masked
+
+  // Display annual fee
+  const beitragJahr = member.beitrag ? `${parseFloat(member.beitrag).toFixed(2)} €/Jahr` : "";
+  $el.beitrag.value = beitragJahr;
+
   $el.mitgliedId.textContent = member.id || "-";
   $el.eintritt.textContent = member.eintritt ? fmtDate(member.eintritt) : "-";
   $el.austritt.textContent = member.austritt ? fmtDate(member.austritt) : "-";
@@ -151,22 +159,38 @@ function setupEventListeners() {
     setActiveMember(state.currentMemberId);
   });
   $el.save.addEventListener("click", saveMember);
+
+  // Toggle IBAN/BIC visibility
+  $el.btnToggleIban.addEventListener("click", () => toggleFieldVisibility($el.iban));
+  $el.btnToggleBic.addEventListener("click", () => toggleFieldVisibility($el.bic));
+}
+
+function toggleFieldVisibility(field) {
+  if (field.type === "password") {
+    field.type = "text";
+  } else {
+    field.type = "password";
+  }
 }
 
 function setEditMode(editing) {
   state.isEditing = editing;
-  
+
   // Update disabled state
   const inputs = [
-    $el.vorname, $el.nachname, $el.strasse, $el.plz, $el.ort, 
-    $el.email, $el.abteilung, $el.handy1, $el.telPriv, 
-    $el.telDienst
+    $el.vorname, $el.nachname, $el.strasse, $el.plz, $el.ort,
+    $el.email, $el.abteilung, $el.handy1, $el.telPriv,
+    $el.telDienst, $el.iban, $el.bic
   ];
-  
+
   inputs.forEach(input => {
     input.disabled = !editing;
   });
-  
+
+  // Enable/disable toggle buttons
+  $el.btnToggleIban.disabled = !editing;
+  $el.btnToggleBic.disabled = !editing;
+
   // Update button states
   $el.edit.disabled = editing;
   $el.save.disabled = !editing;
@@ -176,7 +200,7 @@ function setEditMode(editing) {
 async function saveMember() {
   try {
     $el.error.textContent = "";
-    
+
     const memberData = {
       vorname: $el.vorname.value.trim(),
       nachname: $el.nachname.value.trim(),
@@ -187,7 +211,9 @@ async function saveMember() {
       abteilung: $el.abteilung.value.trim(),
       handy1: $el.handy1.value.trim(),
       telPriv: $el.telPriv.value.trim(),
-      telDienst: $el.telDienst.value.trim()
+      telDienst: $el.telDienst.value.trim(),
+      iban: $el.iban.value.trim(),
+      bic: $el.bic.value.trim()
     };
     
     // Validate required fields

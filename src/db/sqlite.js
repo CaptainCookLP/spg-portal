@@ -200,6 +200,15 @@ async function createTables() {
       PRIMARY KEY (pollId, email)
     )
   `);
+
+  // User Preferences
+  await sqliteRun(`
+    CREATE TABLE IF NOT EXISTS user_preferences (
+      email TEXT PRIMARY KEY,
+      darkMode INTEGER NOT NULL DEFAULT 0,
+      updatedAt TEXT NOT NULL
+    )
+  `);
 }
 
 export async function closeSqlite() {

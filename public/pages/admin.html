@@ -68,19 +68,19 @@
             <div class="fieldgrid">
               <div class="field">
                 <label>Organisationsname</label>
-                <input id="orgName" />
+                <input id="orgName" autocomplete="off" data-form-type="other" />
               </div>
               <div class="field">
                 <label>Logo URL</label>
-                <input id="logoUrl" />
+                <input id="logoUrl" autocomplete="off" data-form-type="other" />
               </div>
               <div class="field">
                 <label>Admin E-Mail</label>
-                <input id="adminEmail" />
+                <input id="adminEmail" autocomplete="off" data-form-type="other" />
               </div>
               <div class="field">
                 <label>DSGVO Link</label>
-                <input id="dsgvoUrl" />
+                <input id="dsgvoUrl" autocomplete="off" data-form-type="other" />
               </div>
             </div>
             <p id="settingsError" class="error"></p>
@@ -99,23 +99,23 @@
             <div class="fieldgrid">
               <div class="field">
                 <label>SMTP Host</label>
-                <input id="smtpHost" />
+                <input id="smtpHost" autocomplete="off" data-form-type="other" />
               </div>
               <div class="field">
                 <label>SMTP Port</label>
-                <input id="smtpPort" type="number" />
+                <input id="smtpPort" type="number" autocomplete="off" data-form-type="other" />
               </div>
               <div class="field">
                 <label>SMTP User</label>
-                <input id="smtpUser" />
+                <input id="smtpUser" autocomplete="off" data-form-type="other" />
               </div>
               <div class="field">
                 <label>SMTP Password</label>
-                <input id="smtpPassword" type="password" />
+                <input id="smtpPassword" type="password" autocomplete="new-password" data-form-type="other" />
               </div>
               <div class="field">
                 <label>From Email</label>
-                <input id="smtpFrom" />
+                <input id="smtpFrom" autocomplete="off" data-form-type="other" />
               </div>
             </div>
             
@@ -138,11 +138,11 @@
             <div class="fieldgrid">
               <div class="field">
                 <label>Betreff</label>
-                <input id="notifTitle" />
+                <input id="notifTitle" autocomplete="off" data-form-type="other" />
               </div>
               <div class="field">
                 <label>Nachricht</label>
-                <textarea id="notifMessage" rows="4"></textarea>
+                <textarea id="notifMessage" rows="4" autocomplete="off" data-form-type="other"></textarea>
               </div>
               <div class="field">
                 <label for="notifTarget">Empfänger</label>
@@ -151,6 +151,15 @@
                   <option value="admins">Nur Admins</option>
                   <option value="selected">Ausgewählte Mitglieder</option>
                 </select>
+              </div>
+              <div class="field" id="memberSearchField" style="display:none">
+                <label>Mitglieder suchen</label>
+                <input id="memberSearch" type="text" placeholder="Name oder E-Mail eingeben..." autocomplete="off" data-form-type="other" />
+                <div id="memberSearchResults" class="search-results"></div>
+              </div>
+              <div class="field" id="selectedMembersField" style="display:none">
+                <label>Ausgewählte Mitglieder</label>
+                <div id="selectedMembers" class="selected-members"></div>
               </div>
             </div>
             

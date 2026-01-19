@@ -14,6 +14,7 @@ export async function getMembersByEmail(email) {
       SELECT
         m.MitgliedID,
         m.Anrede, m.Titel, m.Vorname, m.Nachname,
+        m.Geburtsdatum,
         m.Strasse AS Adresse,
         m.PLZ, m.Ort, m.Land,
         m.Telefon_Privat, m.Telefon_Dienstlich, m.Handy_1, m.Handy_2,
@@ -38,13 +39,14 @@ export async function getMembersByEmail(email) {
   
   const members = result.recordset || [];
   
-  // Map zu Frontend-Feldnamen (lowercase) und sensible Daten maskieren
+  // Map zu Frontend-Feldnamen (lowercase)
   return members.map(m => ({
     id: String(m.MitgliedID),
     anrede: m.Anrede || "",
     titel: m.Titel || "",
     vorname: m.Vorname || "",
     nachname: m.Nachname || "",
+    geburtsdatum: m.Geburtsdatum || null,
     strasse: m.Adresse || "",
     plz: m.PLZ || "",
     ort: m.Ort || "",
@@ -63,8 +65,8 @@ export async function getMembersByEmail(email) {
     extern: m.Extern,
     dsgvo: !!m.DSGVOZugestimmt,
     dsgvoDatum: m.DSGVOZugestimmtAm || null,
-    ibanMasked: maskIban(m.IBAN_Nr),
-    bicMasked: maskBic(m.BIC_Nr)
+    iban: m.IBAN_Nr || "",
+    bic: m.BIC_Nr || ""
   }));
 }
 
